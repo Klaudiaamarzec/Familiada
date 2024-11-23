@@ -1,0 +1,22 @@
+[
+  {
+    "question": "Z czego słynie Francja?",
+    "answers": [
+      {"text": "Wieża Eiffla", "points": 47},
+      {"text": "Szampan", "points": 33},
+      {"text": "Luwr", "points": 19},
+      {"text": "Wino", "points": 11},
+      {"text": "Festiwal filmowy w Cannes", "points": 7}
+    ]
+  },
+  {
+    "question": "Wymień miejsce, w którym można pływać:",
+    "answers": [
+      {"text": "Morze", "points": 39},
+      {"text": "Basen", "points": 32},
+      {"text": "Jezioro", "points": 25},
+      {"text": "Ocean", "points": 13},
+      {"text": "Rzeka", "points": 9}
+    ]
+  }
+]
