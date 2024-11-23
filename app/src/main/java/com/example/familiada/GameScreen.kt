@@ -33,14 +33,14 @@ fun GameScreen(modifier: Modifier = Modifier) {
     var question by remember { mutableStateOf<Question?>(null) }
     val context = LocalContext.current
     var answerText by remember { mutableStateOf("") }
-    val teamName = "Drużyna1" // Przykładowa drużyna
-    val score = 0 // Przykładowa liczba punktów
-    val keyboardController = LocalSoftwareKeyboardController.current // Do obsługi klawiatury
+    val teamName = "Drużyna1"
+    val score = 0
+    val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
 
     // Ładowanie pytań i ustawienie losowego pytania
     LaunchedEffect(key1 = context) {
         val questions = loadQuestions(context)
-        question = questions.random()  // Losowanie pytania
+        question = questions.random()
     }
 
     Column(modifier = modifier
@@ -57,7 +57,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
                     tint = Color.Yellow,
                     modifier = Modifier.size(32.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp)) // Odstęp między ikoną a tekstem
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = teamName,
                     style = TextStyle(
@@ -75,7 +75,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
                     tint = Color.Yellow,
                     modifier = Modifier.size(32.dp)
                 )
-                Spacer(modifier = Modifier.width(8.dp)) // Odstęp między ikoną a tekstem
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "$score pkt",
                     style = TextStyle(
@@ -92,16 +92,16 @@ fun GameScreen(modifier: Modifier = Modifier) {
             thickness = 1.dp,
         )
 
-        Spacer(modifier = Modifier.height(16.dp)) // Odstęp między nagłówkiem a pytaniem
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Wyświetlanie pytania
         question?.let {
             Column(modifier = Modifier.fillMaxWidth()) {
-                // Pytanie wyświetlane przed ramką
+
                 Text(
                     text = it.question,
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Yellow, fontSize = 24.sp), // Kolor pytania na żółty
-                    modifier = Modifier.padding(horizontal = 16.dp) // Padding od lewej i prawej
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Yellow, fontSize = 24.sp),
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
                 // Ramka z odpowiedziami
@@ -112,19 +112,31 @@ fun GameScreen(modifier: Modifier = Modifier) {
                 ) {
                     Surface(
                         modifier = Modifier
-                            .align(Alignment.Center) // Wyśrodkowanie kontenera
-                            .border(1.dp, Color.Yellow) // Ramka wokół kontenera
-                            .clip(RoundedCornerShape(16.dp)) // Zaokrąglenie rogów
+                            .align(Alignment.Center)
+                            .border(1.dp, Color.Yellow)
+                            .clip(RoundedCornerShape(16.dp))
                             .padding(16.dp),
                         color = Color.Black
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             it.answers.forEach { answer ->
-                                Text(
-                                    text = "${answer.text} - ${answer.points} punktów",
-                                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Yellow, fontSize = 20.sp) // Kolor odpowiedzi na żółty
-                                )
-                                Spacer(modifier = Modifier.height(8.dp)) // Odstęp między odpowiedziami
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween, // Rozmieszczenie elementów
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = answer.text,
+                                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Yellow, fontSize = 20.sp),
+                                        modifier = Modifier.weight(1f) // Zajmuje dostępne miejsce
+                                    )
+                                    Text(
+                                        text = "${answer.points}",
+                                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Yellow, fontSize = 20.sp),
+                                        modifier = Modifier.align(Alignment.CenterVertically)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }
@@ -138,7 +150,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
             )
         }
 
-        // Ukrywanie klawiatury, gdy klikniesz poza polem tekstowym
+        // Ukrywanie klawiatury
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -146,15 +158,15 @@ fun GameScreen(modifier: Modifier = Modifier) {
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = {
-                            keyboardController?.hide() // Ukrycie klawiatury po kliknięciu
+                            keyboardController?.hide()
                         }
                     )
                 }
         ) {
             Surface(
                 modifier = Modifier
-                    .border(1.dp, Color.Yellow) // Żółta ramka wokół pola tekstowego
-                    .clip(RoundedCornerShape(16.dp)) // Zaokrąglenie rogów
+                    .border(1.dp, Color.Yellow)
+                    .clip(RoundedCornerShape(16.dp))
                     .padding(8.dp),
                 color = Color.Black // Tło czarne
             ) {
@@ -169,7 +181,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            keyboardController?.hide() // Ukrycie klawiatury po zakończeniu edytowania
+                            keyboardController?.hide() // Ukrycie klawiatury
                         }
                     )
                 )
