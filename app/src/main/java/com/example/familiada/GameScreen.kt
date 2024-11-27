@@ -37,6 +37,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
     var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) } // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
     val teamName = "Drużyna1"
     var score by remember { mutableStateOf(0) }
+    var incorrectAnswers by remember { mutableStateOf(0) }
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
 
     // Ładowanie pytań i ustawienie losowego pytania
@@ -44,6 +45,10 @@ fun GameScreen(modifier: Modifier = Modifier) {
         val questions = loadQuestions(context)
         question = questions.random()
         revealedAnswers = question?.answers?.associate { it.text to false }?.toMutableMap() ?: mutableMapOf()
+    }
+
+    if (incorrectAnswers >= 3) {
+        return
     }
 
     Column(modifier = modifier
@@ -121,10 +126,11 @@ fun GameScreen(modifier: Modifier = Modifier) {
                 ) {
                     Surface(
                         modifier = Modifier
-                            .align(Alignment.Center)
+                            .align(Alignment.CenterStart)
                             .border(1.dp, Color.Yellow)
                             .clip(RoundedCornerShape(16.dp))
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .fillMaxWidth(0.85f),
                         color = Color.Black
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
@@ -147,6 +153,24 @@ fun GameScreen(modifier: Modifier = Modifier) {
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
+                        }
+                    }
+
+                    // X X X
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                    ) {
+                        // Ikony X
+                        repeat(incorrectAnswers) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Close",
+                                tint = Color.Yellow,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .padding(bottom = 8.dp)
+                            )
                         }
                     }
                 }
@@ -188,10 +212,17 @@ fun GameScreen(modifier: Modifier = Modifier) {
                     question?.answers?.find { it.text.equals(answerText, ignoreCase = true) }?.let { correctAnswer ->
                         revealedAnswers[correctAnswer.text] = true
                         score += correctAnswer.points
+                    } ?: run {
+                        incorrectAnswers += 1
                     }
+
+                    if (incorrectAnswers >= 3) {
+                        println("Koniec gry! Zbyt wiele błędnych odpowiedzi.")
+                    }
+
                     answerText = ""
                     keyboardController?.hide()
-                },
+                } ,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
             ) {
                 Icon(
