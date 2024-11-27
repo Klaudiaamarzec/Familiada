@@ -2,6 +2,7 @@ package com.example.familiada
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.foundation.layout.*
@@ -33,19 +34,27 @@ fun GameScreen(modifier: Modifier = Modifier) {
     var question by remember { mutableStateOf<Question?>(null) }
     val context = LocalContext.current
     var answerText by remember { mutableStateOf("") }
+    var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) } // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
     val teamName = "Drużyna1"
-    val score = 0
+    var score by remember { mutableStateOf(0) }
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
 
     // Ładowanie pytań i ustawienie losowego pytania
     LaunchedEffect(key1 = context) {
         val questions = loadQuestions(context)
         question = questions.random()
+        revealedAnswers = question?.answers?.associate { it.text to false }?.toMutableMap() ?: mutableMapOf()
     }
 
     Column(modifier = modifier
         .fillMaxSize()
-        .background(Color.Black)) {
+        .background(Color.Black)
+        .pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                keyboardController?.hide() // Ukryj klawiaturę po kliknięciu ekranu
+            })
+        }
+    ) {
 
         // Nagłówek
         Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -122,16 +131,16 @@ fun GameScreen(modifier: Modifier = Modifier) {
                             it.answers.forEach { answer ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween, // Rozmieszczenie elementów
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = answer.text,
+                                        text = if (revealedAnswers[answer.text] == true) answer.text else "..................",
                                         style = MaterialTheme.typography.bodyMedium.copy(color = Color.Yellow, fontSize = 20.sp),
-                                        modifier = Modifier.weight(1f) // Zajmuje dostępne miejsce
+                                        modifier = Modifier.weight(1f)
                                     )
                                     Text(
-                                        text = "${answer.points}",
+                                        text = if (revealedAnswers[answer.text] == true) "${answer.points}" else "",
                                         style = MaterialTheme.typography.bodyMedium.copy(color = Color.Yellow, fontSize = 20.sp),
                                         modifier = Modifier.align(Alignment.CenterVertically)
                                     )
@@ -150,40 +159,45 @@ fun GameScreen(modifier: Modifier = Modifier) {
             )
         }
 
-        // Ukrywanie klawiatury
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp)
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = {
-                            keyboardController?.hide()
-                        }
-                    )
-                }
+                .clickable { // Ukrycie klawiatury po dotknięciu
+                    keyboardController?.hide()
+                },
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(
+            TextField(
+                value = answerText,
+                onValueChange = { answerText = it },
+                label = { Text(text = "Wpisz odpowiedź", color = Color.Yellow) },
+                textStyle = TextStyle(color = Color.Yellow, fontSize = 20.sp),
                 modifier = Modifier
-                    .border(1.dp, Color.Yellow)
-                    .clip(RoundedCornerShape(16.dp))
-                    .padding(8.dp),
-                color = Color.Black // Tło czarne
+                    .weight(1f)
+                    .border(1.dp, Color.Yellow, RoundedCornerShape(8.dp)),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text
+                )
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = {
+                    question?.answers?.find { it.text.equals(answerText, ignoreCase = true) }?.let { correctAnswer ->
+                        revealedAnswers[correctAnswer.text] = true
+                        score += correctAnswer.points
+                    }
+                    answerText = ""
+                    keyboardController?.hide()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
             ) {
-                TextField(
-                    value = answerText,
-                    onValueChange = { answerText = it },
-                    label = { Text(text = "Wpisz odpowiedź") },
-                    textStyle = TextStyle(color = Color.Yellow, fontSize = 20.sp),
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboardController?.hide() // Ukrycie klawiatury
-                        }
-                    )
+                Icon(
+                    imageVector = Icons.Filled.ArrowForward,
+                    contentDescription = "Wyślij odpowiedź",
+                    tint = Color.Black
                 )
             }
         }
