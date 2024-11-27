@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.familiada.screens.GameScreen
+import com.example.familiada.screens.StartScreen
 import com.example.familiada.ui.theme.FamiliadaTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +25,8 @@ class MainActivity : ComponentActivity() {
     private fun startGame() {
         currentScreen = {
             FamiliadaTheme {
-                GameScreen()
+                val context = LocalContext.current
+                GameScreen(context = context)
             }
         }
         setContent {

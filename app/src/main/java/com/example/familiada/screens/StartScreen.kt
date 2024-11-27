@@ -1,4 +1,4 @@
-package com.example.familiada
+package com.example.familiada.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button

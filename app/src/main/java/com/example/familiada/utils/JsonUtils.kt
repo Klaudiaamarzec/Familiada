@@ -13,9 +13,11 @@ fun loadQuestions(context: Context): List<Question> {
         val reader = InputStreamReader(inputStream)
         val jsonText = reader.readText()
 
-        Json.decodeFromString<List<Question>>(jsonText)
+        val loadedQuestions = Json.decodeFromString<List<Question>>(jsonText)
+        loadedQuestions.shuffled()
+
     } catch (e: Exception) {
         Log.e("LoadQuestions", "Błąd wczytywania pliku JSON: ${e.message}", e)
-        emptyList<Question>()  // Zwrócenie pustej listy w przypadku błędu
+        emptyList<Question>()
     }
 }

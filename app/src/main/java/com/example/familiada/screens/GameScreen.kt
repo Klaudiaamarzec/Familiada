@@ -1,69 +1,54 @@
-package com.example.familiada
+package com.example.familiada.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.ui.tooling.preview.Preview
+import android.content.Context
+import androidx.compose.foundation.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.*
+import androidx.compose.ui.platform.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.familiada.data.Question
-import com.example.familiada.utils.loadQuestions
-import androidx.compose.ui.platform.LocalContext
-import com.example.familiada.ui.theme.FamiliadaTheme
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.material.icons.Icons
+import androidx.compose.ui.text.*
+import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
+import com.example.familiada.ui.theme.FamiliadaTheme
+import com.example.familiada.controller.GameController
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GameScreen(modifier: Modifier = Modifier) {
-    var question by remember { mutableStateOf<Question?>(null) }
-    val context = LocalContext.current
+fun GameScreen(modifier: Modifier = Modifier, context: Context) {
+
+    val gameController = remember { GameController(context) }
     var answerText by remember { mutableStateOf("") }
+    val question = gameController.getCurrentQuestion()
     var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) } // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
-    val teamName = "Drużyna1"
-    var score by remember { mutableStateOf(0) }
-    var incorrectAnswers by remember { mutableStateOf(0) }
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
-
-    // Ładowanie pytań i ustawienie losowego pytania
-    LaunchedEffect(key1 = context) {
-        val questions = loadQuestions(context)
-        question = questions.random()
-        revealedAnswers = question?.answers?.associate { it.text to false }?.toMutableMap() ?: mutableMapOf()
-    }
-
-    if (incorrectAnswers >= 3) {
-        return
-    }
 
     Column(modifier = modifier
         .fillMaxSize()
         .background(Color.Black)
         .pointerInput(Unit) {
             detectTapGestures(onTap = {
-                keyboardController?.hide() // Ukryj klawiaturę po kliknięciu ekranu
+                keyboardController?.hide()
             })
         }
     ) {
 
         // Nagłówek
         Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            // Ikona sylwetki drużyny
+            // Drużyna
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Filled.Person,
@@ -73,7 +58,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = teamName,
+                    text = gameController.getCurrentTeam(),
                     style = TextStyle(
                         color = Color.Yellow,
                         fontWeight = FontWeight.Bold,
@@ -81,7 +66,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
                     )
                 )
             }
-            // Ikona pucharu i punkty
+            // Punkty
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Filled.Star,
@@ -91,7 +76,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "$score pkt",
+                    text = "${gameController.getScore()} pkt",
                     style = TextStyle(
                         color = Color.Yellow,
                         fontWeight = FontWeight.Bold,
@@ -101,14 +86,14 @@ fun GameScreen(modifier: Modifier = Modifier) {
             }
         }
 
-        Divider(
-            color = Color.Yellow,
+        HorizontalDivider(
             thickness = 1.dp,
+            color = Color.Yellow
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Wyświetlanie pytania
+        // Pytanie
         question?.let {
             Column(modifier = Modifier.fillMaxWidth()) {
 
@@ -161,8 +146,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                     ) {
-                        // Ikony X
-                        repeat(incorrectAnswers) {
+                        repeat(gameController.getIncorrectAnswers()) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
                                 contentDescription = "Close",
@@ -186,10 +170,7 @@ fun GameScreen(modifier: Modifier = Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-                .clickable { // Ukrycie klawiatury po dotknięciu
-                    keyboardController?.hide()
-                },
+                .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
@@ -209,20 +190,16 @@ fun GameScreen(modifier: Modifier = Modifier) {
 
             Button(
                 onClick = {
-                    question?.answers?.find { it.text.equals(answerText, ignoreCase = true) }?.let { correctAnswer ->
-                        revealedAnswers[correctAnswer.text] = true
-                        score += correctAnswer.points
-                    } ?: run {
-                        incorrectAnswers += 1
-                    }
 
-                    if (incorrectAnswers >= 3) {
-                        println("Koniec gry! Zbyt wiele błędnych odpowiedzi.")
+                    val result = gameController.submitAnswer(answerText)
+
+                    if(result) {
+                        revealedAnswers[answerText] = true
                     }
 
                     answerText = ""
                     keyboardController?.hide()
-                } ,
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
             ) {
                 Icon(
@@ -240,7 +217,8 @@ fun GameScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GameScreenPreview() {
+    val context = LocalContext.current
     FamiliadaTheme {
-        GameScreen(modifier = Modifier.fillMaxSize())
+        GameScreen(modifier = Modifier.fillMaxSize(), context = context)
     }
 }
