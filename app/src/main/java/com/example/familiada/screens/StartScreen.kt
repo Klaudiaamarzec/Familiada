@@ -13,7 +13,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun StartScreen(onStartGame: () -> Unit) {
+fun StartScreen(
+    onStartGame: () -> Unit,
+    onRules: () -> Unit,
+    onSettings: () -> Unit
+    ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -38,10 +42,33 @@ fun StartScreen(onStartGame: () -> Unit) {
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
             ) {
                 Text(
-                    text = "GRAJ",
+                    text = "NOWA GRA",
                     style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
                 )
             }
+
+            Button(
+                onClick = { onRules() },
+                modifier = Modifier.padding(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+            ) {
+                Text(
+                    text = "ZASADY GRY",
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                )
+            }
+
+            Button(
+                onClick = { onSettings() },
+                modifier = Modifier.padding(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+            ) {
+                Text(
+                    text = "USTAWIENIA",
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                )
+            }
+
         }
     }
 }

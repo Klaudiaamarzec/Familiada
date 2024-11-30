@@ -8,10 +8,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.familiada.screens.GameScreen
 import com.example.familiada.screens.StartScreen
+import com.example.familiada.screens.RulesScreen
+import com.example.familiada.screens.SettingsScreen
 import com.example.familiada.ui.theme.FamiliadaTheme
 
 class MainActivity : ComponentActivity() {
-    private var currentScreen: @Composable () -> Unit = { StartScreen(onStartGame = { startGame() }) }
+    private var currentScreen: @Composable () -> Unit = { StartScreen(onStartGame = { startGame() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() }) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +38,37 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun navigateToRules() {
+        currentScreen = {
+            FamiliadaTheme {
+                RulesScreen()
+            }
+        }
+        setContent {
+            FamiliadaTheme {
+                currentScreen()
+            }
+        }
+    }
+
+    private fun navigateToSettings() {
+        currentScreen = {
+            FamiliadaTheme {
+                SettingsScreen()
+            }
+        }
+        setContent {
+            FamiliadaTheme {
+                currentScreen()
+            }
+        }
+    }
+
     @Preview(showBackground = true)
     @Composable
     fun PreviewStartScreen() {
         FamiliadaTheme {
-            StartScreen(onStartGame = { startGame() })
+            StartScreen(onStartGame = { startGame() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
         }
     }
 }
