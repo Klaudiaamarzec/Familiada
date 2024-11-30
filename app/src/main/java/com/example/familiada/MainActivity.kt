@@ -38,6 +38,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun navigateToStart() {
+        currentScreen = {
+            FamiliadaTheme {
+                StartScreen(onStartGame = { startGame() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
+            }
+        }
+        setContent {
+            FamiliadaTheme {
+                currentScreen()
+            }
+        }
+    }
+
     private fun navigateToRules() {
         currentScreen = {
             FamiliadaTheme {
@@ -54,7 +67,10 @@ class MainActivity : ComponentActivity() {
     private fun navigateToSettings() {
         currentScreen = {
             FamiliadaTheme {
-                SettingsScreen()
+                SettingsScreen(
+                    onBackToStart = { navigateToStart() },
+                    context = this@MainActivity
+                )
             }
         }
         setContent {
