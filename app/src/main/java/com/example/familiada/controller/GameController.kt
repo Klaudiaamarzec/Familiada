@@ -8,6 +8,7 @@ import com.example.familiada.utils.loadQuestions
 import java.text.Normalizer
 import kotlin.random.Random
 import com.example.familiada.R
+import kotlinx.coroutines.*
 
 class GameController(private val context: Context, private val isSoundEnabled: Boolean = true) {
 
@@ -20,6 +21,10 @@ class GameController(private val context: Context, private val isSoundEnabled: B
     private var correctAnswersTeam1 = 0
     private var correctAnswersTeam2 = 0
     private var isTeam1Turn = true
+
+    private var timerJob: Job? = null
+    var remainingTime by mutableStateOf(60)
+    var timerActive by mutableStateOf(false)
 
     // Obsługa dźwięków
     private fun playSound(resourceId: Int) {
@@ -55,6 +60,8 @@ class GameController(private val context: Context, private val isSoundEnabled: B
         }
 
         //val correctAnswer = question?.answers?.find { it.text.equals(answerText, ignoreCase = true) }
+
+        stopTimer()
 
         return if (correctAnswer != null) {
             // Dodanie punktów do drużyny
@@ -126,6 +133,29 @@ class GameController(private val context: Context, private val isSoundEnabled: B
 
     fun getCurrentTeam(): String {
         return if (isTeam1Turn) "Drużyna 1" else "Drużyna 2"
+    }
+    fun startTimer() {
+        if (timerActive) return
+
+        timerJob = CoroutineScope(Dispatchers.Main).launch {
+            while (remainingTime > 0) {
+                delay(1000)
+                remainingTime -= 1
+            }
+            if (remainingTime == 0) {
+                submitAnswer("")
+                resetTimer()
+            }
+        }
+    }
+
+    fun stopTimer() {
+        timerJob?.cancel()
+    }
+
+    fun resetTimer() {
+        remainingTime = 60
+        startTimer()
     }
 
 //    fun isGameOver(): Boolean {

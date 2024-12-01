@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.*
 import androidx.compose.material.icons.*
@@ -28,7 +27,7 @@ import com.example.familiada.controller.GameController
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: Boolean) {
+fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: Boolean, isTimeLimitEnabled: Boolean) {
 
     val gameController = remember { GameController(context, isSoundEnabled) }
     var answerText by remember { mutableStateOf("") }
@@ -41,6 +40,9 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
     val iconColor = MaterialTheme.colorScheme.primaryContainer
     val borderColor = MaterialTheme.colorScheme.primaryContainer
 
+    LaunchedEffect(question) {
+        gameController.resetTimer()
+    }
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -204,6 +206,8 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
 
                     answerText = ""
                     keyboardController?.hide()
+
+                    gameController.resetTimer()
                 }
             ) {
                 Icon(
@@ -213,6 +217,21 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
             }
         }
 
+        if (isTimeLimitEnabled) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+            Text(
+                text = "Czas: ${gameController.remainingTime} s",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = textColor,
+                    fontWeight = FontWeight.Bold
+                ))
+            }
+        }
     }
 }
 
@@ -222,6 +241,6 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
 fun GameScreenPreview() {
     val context = LocalContext.current
     FamiliadaTheme {
-        GameScreen(modifier = Modifier.fillMaxSize(), context = context, isSoundEnabled = true)
+        GameScreen(modifier = Modifier.fillMaxSize(), context = context, isSoundEnabled = true, isTimeLimitEnabled = true)
     }
 }

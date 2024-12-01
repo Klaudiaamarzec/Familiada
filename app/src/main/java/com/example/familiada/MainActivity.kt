@@ -34,11 +34,12 @@ class MainActivity : ComponentActivity() {
 
     private fun startGame() {
         val isSoundEnabled = getSharedPreferences("AppSettings", MODE_PRIVATE).getBoolean("isSoundEnabled", false)
+        val isTimeLimitEnabled = getSharedPreferences("AppSettings", MODE_PRIVATE).getBoolean("isTimeLimitEnabled", false)
 
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 val context = LocalContext.current
-                GameScreen(context = context, isSoundEnabled = isSoundEnabled)
+                GameScreen(context = context, isSoundEnabled = isSoundEnabled, isTimeLimitEnabled = isTimeLimitEnabled)
             }
         }
         setContent {
