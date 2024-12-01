@@ -35,15 +35,15 @@ class GameController(
     private var isTeam1Turn = true
     private var team1Queue: MutableList<String> = team1Players.toMutableList()
     private var team2Queue: MutableList<String> = team2Players.toMutableList()
-    private var team1PlayerIdx = 0;
-    private var team2PlayerIdx = 0;
-    private var roundNumber = 1;
+    private var team1PlayerIdx = 0
+    private var team2PlayerIdx = 0
+    private var roundNumber = 1
     private var stolenRound = false
     private var gameOver = false
 
     private var timerJob: Job? = null
     var remainingTime by mutableStateOf(60)
-    var timerActive by mutableStateOf(false)
+    private var timerActive by mutableStateOf(false)
 
     fun getPlayer(): String {
         return if (isTeam1Turn) {
@@ -54,16 +54,15 @@ class GameController(
     var answeringTeam: String? = null // Przechowuje nazwę drużyny odpowiadającej
 
     fun selectTeam(team: String) {
-        if (answeringTeam == null) {
+        if (answeringTeam === null) {
             answeringTeam = team
             isTeam1Turn = team == "Drużyna 1"
         }
     }
 
-    fun resetAnsweringTeam() {
+    private fun resetAnsweringTeam() {
         answeringTeam = null
     }
-
 
     fun isGameOver(): Boolean {
         return gameOver
@@ -109,9 +108,9 @@ class GameController(
         }
 
         if (isTeam1Turn) {
-            team1PlayerIdx++;
+            team1PlayerIdx++
         } else {
-            team2PlayerIdx++;
+            team2PlayerIdx++
         }
 
         //val correctAnswer = question?.answers?.find { it.text.equals(answerText, ignoreCase = true) }
@@ -129,7 +128,7 @@ class GameController(
                 }
                 nextQuestion()
                 resetTeam()
-                stolenRound = false;
+                stolenRound = false
             } else {
                 // Dodanie punktów do drużyny
                 if (isTeam1Turn) {
@@ -172,7 +171,7 @@ class GameController(
                 playSound(R.raw.wrong_answer)
                 resetTeam()
                 nextQuestion()
-                stolenRound = false;
+                stolenRound = false
             }
             false
         }
@@ -199,7 +198,7 @@ class GameController(
         team2PlayerIdx = 0
     }
 
-    fun handleStolenRound() {
+    private fun handleStolenRound() {
         stolenRound = true
         resetTeamAnswerCounts()
         resetTeamPlayerIndexes()
@@ -220,7 +219,7 @@ class GameController(
             resetAnsweringTeam()
         }
         if (roundNumber > 10) {
-            gameOver = true;
+            gameOver = true
         }
     }
 
@@ -242,7 +241,7 @@ class GameController(
         }
     }
 
-    fun startTimer() {
+    private fun startTimer() {
         if (timerActive) return
 
         timerJob = CoroutineScope(Dispatchers.Main).launch {
@@ -257,7 +256,7 @@ class GameController(
         }
     }
 
-    fun stopTimer() {
+    private fun stopTimer() {
         timerJob?.cancel()
     }
 
