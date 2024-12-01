@@ -95,8 +95,7 @@ fun GameScreen(
             detectTapGestures(onTap = {
                 keyboardController?.hide()
             })
-        }
-    ) {
+        }) {
 
         // Nagłówek
         Row(
@@ -115,8 +114,7 @@ fun GameScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = gameController.getCurrentTeam(),
-                    style = TextStyle(
+                    text = gameController.getCurrentTeam(), style = TextStyle(
                         color = textColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = MaterialTheme.typography.bodyLarge.fontSize
@@ -133,8 +131,7 @@ fun GameScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Runda nr ${gameController.getRoundNumber()}",
-                    style = TextStyle(
+                    text = "Runda nr ${gameController.getRoundNumber()}", style = TextStyle(
                         color = textColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = MaterialTheme.typography.bodyLarge.fontSize
@@ -151,8 +148,7 @@ fun GameScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${gameController.getScore()} pkt",
-                    style = TextStyle(
+                    text = "${gameController.getScore()} pkt", style = TextStyle(
                         color = textColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = MaterialTheme.typography.bodyLarge.fontSize
@@ -162,139 +158,129 @@ fun GameScreen(
         }
 
         HorizontalDivider(
-            thickness = 1.dp,
-            color = borderColor
+            thickness = 1.dp, color = borderColor
         )
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "Teraz odpowiada: ${gameController.getPlayer()}", // Display the active player's name
-                style = TextStyle(
-                    color = textColor,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                    .padding(8.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Pytanie
-        question?.let {
-            Column(modifier = Modifier.fillMaxWidth()) {
-
+        if (gameController.answeringTeam != null) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = it.question,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = textColor,
-                        fontSize = 24.sp
+                    text = "Teraz odpowiada: ${gameController.getPlayer()}",
+                    style = TextStyle(
+                        color = textColor, fontWeight = FontWeight.Bold, fontSize = 18.sp
                     ),
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                // Ramka z odpowiedziami
-                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp)
-                ) {
-                    Surface(
+                        .padding(horizontal = 16.dp)
+                        .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                        .padding(8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            // Pytanie
+            question?.let {
+                Column(modifier = Modifier.fillMaxWidth()) {
+
+                    Text(
+                        text = it.question, style = MaterialTheme.typography.bodyLarge.copy(
+                            color = textColor, fontSize = 24.sp
+                        ), modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    // Ramka z odpowiedziami
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .border(1.dp, borderColor)
-                            .clip(RoundedCornerShape(16.dp))
-                            .padding(16.dp)
-                            .fillMaxWidth(0.85f)
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 16.dp)
                     ) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            it.answers.forEach { answer ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = if (revealedAnswers[answer.text] == true) answer.text else "..................",
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            color = textColor,
-                                            fontSize = 20.sp
-                                        ),
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Text(
-                                        text = if (revealedAnswers[answer.text] == true) "${answer.points}" else "",
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            color = textColor,
-                                            fontSize = 20.sp
-                                        ),
-                                        modifier = Modifier.align(Alignment.CenterVertically)
-                                    )
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .border(1.dp, borderColor)
+                                .clip(RoundedCornerShape(16.dp))
+                                .padding(16.dp)
+                                .fillMaxWidth(0.85f)
+                        ) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                it.answers.forEach { answer ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = if (revealedAnswers[answer.text] == true) answer.text else "..................",
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                color = textColor, fontSize = 20.sp
+                                            ),
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Text(
+                                            text = if (revealedAnswers[answer.text] == true) "${answer.points}" else "",
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                color = textColor, fontSize = 20.sp
+                                            ),
+                                            modifier = Modifier.align(Alignment.CenterVertically)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
                                 }
-                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+
+                        // X X X
+                        Column(
+                            modifier = Modifier.align(Alignment.CenterEnd)
+                        ) {
+                            repeat(gameController.getIncorrectAnswers()) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Close",
+                                    tint = iconColor,
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .padding(bottom = 8.dp)
+                                )
                             }
                         }
                     }
-
-                    // X X X
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                    ) {
-                        repeat(gameController.getIncorrectAnswers()) {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = "Close",
-                                tint = iconColor,
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .padding(bottom = 8.dp)
-                            )
-                        }
-                    }
                 }
-            }
-        } ?: run {
-            Text(
-                text = "Ładowanie pytań...",
-                modifier = Modifier.fillMaxSize(),
-                style = MaterialTheme.typography.bodyLarge.copy(color = textColor)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = answerText,
-                onValueChange = { answerText = it },
-                label = { Text(text = "Wpisz odpowiedź", color = textColor) },
-                textStyle = TextStyle(color = textColor, fontSize = 20.sp),
-                modifier = Modifier
-                    .weight(1f)
-                    .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                    .then(
-                        if (gameController.answeringTeam == null) Modifier.background(Color.Gray) else Modifier
-                    ),
-                enabled = gameController.answeringTeam != null, // Blokada, jeśli drużyna nie została wybrana
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text
+            } ?: run {
+                Text(
+                    text = "Ładowanie pytań...",
+                    modifier = Modifier.fillMaxSize(),
+                    style = MaterialTheme.typography.bodyLarge.copy(color = textColor)
                 )
-            )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextField(
+                    value = answerText,
+                    onValueChange = { answerText = it },
+                    label = { Text(text = "Wpisz odpowiedź", color = textColor) },
+                    textStyle = TextStyle(color = textColor, fontSize = 20.sp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                        .then(
+                            if (gameController.answeringTeam == null) Modifier.background(Color.Gray) else Modifier
+                        ),
+                    enabled = gameController.answeringTeam != null, // Blokada, jeśli drużyna nie została wybrana
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text
+                    )
+                )
 
 
 
-            Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-            Button(
-                onClick = {
+                Button(onClick = {
 
                     val result = gameController.submitAnswer(answerText)
 
@@ -306,26 +292,35 @@ fun GameScreen(
                     keyboardController?.hide()
 
                     gameController.resetTimer()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowForward,
+                        contentDescription = "Wyślij odpowiedź"
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = "Wyślij odpowiedź"
-                )
             }
         }
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
             Button(
                 onClick = {
                     if (gameController.answeringTeam == null) {
                         gameController.selectTeam("Drużyna 1")
                     }
-                },
-                enabled = activeTeam == null,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+                }, enabled = activeTeam == null,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (gameController.answeringTeam == "Drużyna 1") Color.Green else Color.LightGray
+                )
             ) {
-                Text("Drużyna 1", color = Color.Black)
+                Text(
+                    "Drużyna 1",
+                    color = if (gameController.answeringTeam == "Drużyna 1") Color.White else Color.Black
+                )
             }
 
             Button(
@@ -333,13 +328,16 @@ fun GameScreen(
                     if (gameController.answeringTeam == null) {
                         gameController.selectTeam("Drużyna 2")
                     }
-                },
-                enabled = activeTeam == null,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+                }, enabled = activeTeam == null,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (gameController.answeringTeam == "Drużyna 2") Color.Blue else Color.LightGray
+                )
             ) {
-                Text("Drużyna 2", color = Color.White)
+                Text(
+                    "Drużyna 2",
+                    color = if (gameController.answeringTeam == "Drużyna 2") Color.White else Color.Black
+                )
             }
-
         }
 
 
@@ -353,8 +351,7 @@ fun GameScreen(
                 Text(
                     text = "Czas: ${gameController.remainingTime} s",
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = textColor,
-                        fontWeight = FontWeight.Bold
+                        color = textColor, fontWeight = FontWeight.Bold
                     )
                 )
             }
@@ -370,7 +367,8 @@ fun GameScreenPreview() {
     val context = LocalContext.current
     FamiliadaTheme {
         GameScreen(
-            modifier = Modifier.fillMaxSize(), context = context,
+            modifier = Modifier.fillMaxSize(),
+            context = context,
             team1Players = listOf("Nile", "Amazon", "Yangtze"),
             team2Players = listOf("Nile", "Amazon", "Yangtze"),
             isTimeLimitEnabled = true,
