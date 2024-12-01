@@ -28,9 +28,9 @@ import com.example.familiada.controller.GameController
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GameScreen(modifier: Modifier = Modifier, context: Context) {
+fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: Boolean) {
 
-    val gameController = remember { GameController(context) }
+    val gameController = remember { GameController(context, isSoundEnabled) }
     var answerText by remember { mutableStateOf("") }
     val question = gameController.getCurrentQuestion()
     var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) } // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
@@ -222,6 +222,6 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
 fun GameScreenPreview() {
     val context = LocalContext.current
     FamiliadaTheme {
-        GameScreen(modifier = Modifier.fillMaxSize(), context = context)
+        GameScreen(modifier = Modifier.fillMaxSize(), context = context, isSoundEnabled = true)
     }
 }

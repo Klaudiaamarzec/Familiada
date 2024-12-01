@@ -33,10 +33,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startGame() {
+        val isSoundEnabled = getSharedPreferences("AppSettings", MODE_PRIVATE).getBoolean("isSoundEnabled", false)
+
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 val context = LocalContext.current
-                GameScreen(context = context)
+                GameScreen(context = context, isSoundEnabled = isSoundEnabled)
             }
         }
         setContent {

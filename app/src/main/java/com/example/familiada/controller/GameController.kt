@@ -1,13 +1,15 @@
 package com.example.familiada.controller
 
 import android.content.Context
+import android.media.MediaPlayer
 import androidx.compose.runtime.*
 import com.example.familiada.data.Question
 import com.example.familiada.utils.loadQuestions
 import java.text.Normalizer
 import kotlin.random.Random
+import com.example.familiada.R
 
-class GameController(context: Context) {
+class GameController(private val context: Context, private val isSoundEnabled: Boolean = true) {
 
     private val questions: List<Question> = loadQuestions(context)
     private var currentQuestionIndex by mutableIntStateOf(Random.nextInt(questions.size))  // Losowy indeks pytania
@@ -18,6 +20,17 @@ class GameController(context: Context) {
     private var correctAnswersTeam1 = 0
     private var correctAnswersTeam2 = 0
     private var isTeam1Turn = true
+
+    // Obsługa dźwięków
+    private fun playSound(resourceId: Int) {
+        if (isSoundEnabled) {
+            val mediaPlayer = MediaPlayer.create(context, resourceId)
+            mediaPlayer.setOnCompletionListener {
+                it.release()
+            }
+            mediaPlayer.start()
+        }
+    }
 
     // Metody do manipulowania stanem gry
     fun getCurrentQuestion(): Question? {
@@ -55,8 +68,12 @@ class GameController(context: Context) {
 
             // Sprawdzenie, czy drużyna zgadła wszystkie odpowiedzi
             if (correctAnswersTeam1 == question.answers.size && isTeam1Turn || correctAnswersTeam2 == question.answers.size && !isTeam1Turn) {
+                playSound(R.raw.all_corect)
                 switchTeam()
                 nextQuestion()
+            }
+            else {
+                playSound(R.raw.correct_answer)
             }
 
             true
@@ -70,8 +87,12 @@ class GameController(context: Context) {
 
             // Sprawdzenie, czy drużyna przekroczyła 3 błędne odpowiedzi
             if (incorrectAnswersTeam1 >= 3 || incorrectAnswersTeam2 >= 3) {
+                playSound(R.raw.three_wrong)
                 switchTeam()
                 nextQuestion()
+            }
+            else {
+                playSound(R.raw.wrong_answer)
             }
 
             false
