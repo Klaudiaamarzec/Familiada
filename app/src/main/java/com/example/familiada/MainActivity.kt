@@ -11,10 +11,12 @@ import com.example.familiada.screens.GameScreen
 import com.example.familiada.screens.StartScreen
 import com.example.familiada.screens.RulesScreen
 import com.example.familiada.screens.SettingsScreen
+import com.example.familiada.screens.PlayersSelectionScreen
+import com.example.familiada.screens.GamePreparationScreen
 import com.example.familiada.ui.theme.FamiliadaTheme
 
 class MainActivity : ComponentActivity() {
-    private var currentScreen: @Composable () -> Unit = { StartScreen(onStartGame = { startGame() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() }) }
+    private var currentScreen: @Composable () -> Unit = { StartScreen(onStartGame = { navigateToPlayersSelection() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() }) }
     private var isDarkThemeState = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,11 +93,37 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun navigateToPlayersSelection() {
+        currentScreen = {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
+                PlayersSelectionScreen(onPlayersConfirmed = { team1, team2 -> navigateToGamePreparation(team1, team2)})
+            }
+        }
+        setContent {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
+                currentScreen()
+            }
+        }
+    }
+
+    private fun navigateToGamePreparation(team1: List<String>, team2: List<String>) {
+        currentScreen = {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
+                GamePreparationScreen(team1 = team1, team2 = team2, onStartGame = { startGame() })
+            }
+        }
+        setContent {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
+                currentScreen()
+            }
+        }
+    }
+
     @Preview(showBackground = true)
     @Composable
     fun PreviewStartScreen() {
         FamiliadaTheme {
-            StartScreen(onStartGame = { startGame() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
+            StartScreen(onStartGame = { navigateToPlayersSelection() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
         }
     }
 }
