@@ -105,9 +105,8 @@ class GameController(
         stopTimer()
 
         return if (correctAnswer != null) {
-            // Dodanie punktów do drużyny
-
             if (stolenRound) {
+                // Drużyna przejmuje punkty przeciwnej
                 playSound(R.raw.correct_answer)
                 if (isTeam1Turn) {
                     scoreTeam1 += correctAnswer.points + scoreTeam2
@@ -119,6 +118,7 @@ class GameController(
                 resetTeamPlayerIndexes()
                 stolenRound = false;
             } else {
+                // Dodanie punktów do drużyny
                 if (isTeam1Turn) {
                     scoreTeam1 += correctAnswer.points
                     correctAnswersTeam1++
@@ -139,8 +139,8 @@ class GameController(
             }
             true
         } else {
+            // Błędna odpowiedź
             if (!stolenRound) {
-                // Błędna odpowiedź
                 if (isTeam1Turn) {
                     incorrectAnswersTeam1++
                 } else {
@@ -193,12 +193,10 @@ class GameController(
         resetTeamAnswerCounts()
         resetTeamPlayerIndexes()
         isTeam1Turn = !isTeam1Turn
-//        nextQuestion()
     }
 
     private fun switchTeam() {
         isTeam1Turn = !isTeam1Turn
-        // Reset poprawnych i błędnych odpowiedzi
         resetTeamAnswerCounts()
         resetTeamPlayerIndexes()
 
