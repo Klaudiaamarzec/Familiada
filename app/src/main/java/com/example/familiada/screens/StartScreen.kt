@@ -18,10 +18,15 @@ fun StartScreen(
     onRules: () -> Unit,
     onSettings: () -> Unit
     ) {
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val headlineColor = MaterialTheme.colorScheme.primaryContainer
+    val buttonBackgroundColor = MaterialTheme.colorScheme.primary
+    val buttonTextColor = MaterialTheme.colorScheme.onPrimary
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(backgroundColor),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -30,7 +35,7 @@ fun StartScreen(
             Text(
                 text = "Familiada",
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    color = Color.Yellow,
+                    color = headlineColor,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -39,33 +44,42 @@ fun StartScreen(
             Button(
                 onClick = { onStartGame() },
                 modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = buttonBackgroundColor,
+                    contentColor = buttonTextColor
+                )
             ) {
                 Text(
                     text = "NOWA GRA",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
 
             Button(
                 onClick = { onRules() },
                 modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = buttonBackgroundColor,
+                    contentColor = buttonTextColor
+                )
             ) {
                 Text(
                     text = "ZASADY GRY",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
 
             Button(
                 onClick = { onSettings() },
                 modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = buttonBackgroundColor,
+                    contentColor = buttonTextColor
+                )
             ) {
                 Text(
                     text = "USTAWIENIA",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
 

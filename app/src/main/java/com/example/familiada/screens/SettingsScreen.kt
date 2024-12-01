@@ -11,25 +11,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.TextStyle
 
 @Composable
 fun SettingsScreen(
     onBackToStart: () -> Unit,
+    onThemeChange: (Boolean) -> Unit,
     context: Context
 ) {
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
     val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
     var isDarkTheme by remember { mutableStateOf(sharedPreferences.getBoolean("isDarkTheme", false)) }
-    var isSoundEnabled by remember { mutableStateOf(sharedPreferences.getBoolean("isSoundEnabled", true)) }
+    var isSoundEnabled by remember { mutableStateOf(sharedPreferences.getBoolean("isSoundEnabled", false)) }
     var isTimeLimitEnabled by remember { mutableStateOf(sharedPreferences.getBoolean("isTimeLimitEnabled", false)) }
     var isMicEnabled by remember { mutableStateOf(sharedPreferences.getBoolean("isMicEnabled", false)) }
+
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val headlineColor = MaterialTheme.colorScheme.primaryContainer
+    val textColor = MaterialTheme.colorScheme.onBackground
+    val switchThumbColor = MaterialTheme.colorScheme.primary
+    val buttonBackgroundColor = MaterialTheme.colorScheme.primary
+    val buttonTextColor = MaterialTheme.colorScheme.onPrimary
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(backgroundColor),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -38,7 +45,7 @@ fun SettingsScreen(
             Text(
                 text = "Ustawienia",
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    color = Color.Yellow,
+                    color = headlineColor,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -49,7 +56,7 @@ fun SettingsScreen(
                 Text(
                     text = "Motyw aplikacji",
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
+                        color = textColor,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -57,9 +64,11 @@ fun SettingsScreen(
                     checked = isDarkTheme,
                     onCheckedChange = {
                         isDarkTheme = it
+                        onThemeChange(it)
                         editor.putBoolean("isDarkTheme", it).apply()
                     },
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp),
+                    colors = SwitchDefaults.colors(checkedThumbColor = switchThumbColor)
                 )
             }
 
@@ -70,7 +79,7 @@ fun SettingsScreen(
                 Text(
                     text = "Dźwięki",
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
+                        color = textColor,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -80,7 +89,8 @@ fun SettingsScreen(
                         isSoundEnabled = it
                         editor.putBoolean("isSoundEnabled", it).apply()
                     },
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp),
+                    colors = SwitchDefaults.colors(checkedThumbColor = switchThumbColor)
                 )
             }
 
@@ -91,7 +101,7 @@ fun SettingsScreen(
                 Text(
                     text = "Ograniczenie czasowe",
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
+                        color = textColor,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -101,7 +111,8 @@ fun SettingsScreen(
                         isTimeLimitEnabled = it
                         editor.putBoolean("isTimeLimitEnabled", it).apply()
                     },
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp),
+                    colors = SwitchDefaults.colors(checkedThumbColor = switchThumbColor)
                 )
             }
 
@@ -112,7 +123,7 @@ fun SettingsScreen(
                 Text(
                     text = "Tryb mikrofonu",
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
+                        color = textColor,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -122,7 +133,8 @@ fun SettingsScreen(
                         isMicEnabled = it
                         editor.putBoolean("isMicEnabled", it).apply()
                     },
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp),
+                    colors = SwitchDefaults.colors(checkedThumbColor = switchThumbColor)
                 )
             }
 
@@ -132,11 +144,14 @@ fun SettingsScreen(
             Button(
                 onClick = { onBackToStart() },
                 modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = buttonBackgroundColor,
+                    contentColor = buttonTextColor
+                )
             ) {
                 Text(
                     text = "POWRÓT DO MENU",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }

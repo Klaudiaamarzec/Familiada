@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.familiada.screens.GameScreen
@@ -14,11 +15,16 @@ import com.example.familiada.ui.theme.FamiliadaTheme
 
 class MainActivity : ComponentActivity() {
     private var currentScreen: @Composable () -> Unit = { StartScreen(onStartGame = { startGame() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() }) }
+    private var isDarkThemeState = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPreferences = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        isDarkThemeState.value = sharedPreferences.getBoolean("isDarkTheme", false)
+
         setContent {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 currentScreen()
             }
         }
@@ -26,13 +32,13 @@ class MainActivity : ComponentActivity() {
 
     private fun startGame() {
         currentScreen = {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 val context = LocalContext.current
                 GameScreen(context = context)
             }
         }
         setContent {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 currentScreen()
             }
         }
@@ -40,12 +46,12 @@ class MainActivity : ComponentActivity() {
 
     private fun navigateToStart() {
         currentScreen = {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 StartScreen(onStartGame = { startGame() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
             }
         }
         setContent {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 currentScreen()
             }
         }
@@ -53,12 +59,12 @@ class MainActivity : ComponentActivity() {
 
     private fun navigateToRules() {
         currentScreen = {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 RulesScreen()
             }
         }
         setContent {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 currentScreen()
             }
         }
@@ -66,15 +72,20 @@ class MainActivity : ComponentActivity() {
 
     private fun navigateToSettings() {
         currentScreen = {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 SettingsScreen(
                     onBackToStart = { navigateToStart() },
+                    onThemeChange = { newTheme ->
+                        isDarkThemeState.value = newTheme
+                        val sharedPreferences = getSharedPreferences("AppSettings", MODE_PRIVATE)
+                        sharedPreferences.edit().putBoolean("isDarkTheme", newTheme).apply()
+                    },
                     context = this@MainActivity
                 )
             }
         }
         setContent {
-            FamiliadaTheme {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 currentScreen()
             }
         }
