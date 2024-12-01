@@ -1,6 +1,14 @@
 package com.example.familiada.screens
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.speech.RecognizerIntent
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -47,11 +55,15 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.familiada.controller.GameController
 import com.example.familiada.ui.theme.FamiliadaTheme
+import java.util.Locale
 
 @Composable
 fun GameScreen(
@@ -86,6 +98,35 @@ fun GameScreen(
     LaunchedEffect(question) {
         gameController.resetTimer()
     }
+
+    val context = LocalContext.current
+
+    val handleAnswerSubmit = {
+        val result = gameController.submitAnswer(answerText)
+
+        if (result) {
+            revealedAnswers[answerText] = true
+        }
+
+        answerText = ""
+        keyboardController?.hide()
+
+        gameController.resetTimer()
+    }
+
+    val speechRecognizerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val spokenText =
+                result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
+            if (spokenText != null) {
+                answerText = spokenText
+                handleAnswerSubmit()
+            } else {
+                Toast.makeText(context, "Nie udało się rozpoznać głosu", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
 
 
     Column(modifier = modifier
@@ -281,22 +322,52 @@ fun GameScreen(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Button(onClick = {
-
-                    val result = gameController.submitAnswer(answerText)
-
-                    if (result) {
-                        revealedAnswers[answerText] = true
-                    }
-
-                    answerText = ""
-                    keyboardController?.hide()
-
-                    gameController.resetTimer()
+                    handleAnswerSubmit()
                 }) {
                     Icon(
                         imageVector = Icons.Filled.ArrowForward,
                         contentDescription = "Wyślij odpowiedź"
                     )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp, vertical = 32.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                // Odpowiadanie głosowe
+                Button(
+                    onClick = {
+                        // Sprawdzenie uprawnień
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.RECORD_AUDIO
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                            intent.putExtra(
+                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                            )
+                            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "pl-PL")
+                            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Mów teraz...")
+
+                            // Jeżeli przyznano uprawnienia, uruchom rozpoznawanie mowy
+                            speechRecognizerLauncher.launch(intent)
+
+                        } else {
+                            ActivityCompat.requestPermissions(
+                                context as Activity,
+                                arrayOf(Manifest.permission.RECORD_AUDIO),
+                                100
+                            )
+                        }
+                    },
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Text("Mów")
                 }
             }
         }
@@ -339,7 +410,6 @@ fun GameScreen(
                 )
             }
         }
-
 
         if (isTimeLimitEnabled) {
             Row(
