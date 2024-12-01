@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
     private fun navigateToStart() {
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
-                StartScreen(onStartGame = { startGame() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
+                StartScreen(onStartGame = { navigateToPlayersSelection() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
             }
         }
         setContent {
