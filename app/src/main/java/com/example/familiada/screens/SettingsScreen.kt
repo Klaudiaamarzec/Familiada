@@ -30,8 +30,6 @@ fun SettingsScreen(
     val headlineColor = MaterialTheme.colorScheme.primaryContainer
     val textColor = MaterialTheme.colorScheme.onBackground
     val switchThumbColor = MaterialTheme.colorScheme.primary
-    val buttonBackgroundColor = MaterialTheme.colorScheme.primary
-    val buttonTextColor = MaterialTheme.colorScheme.onPrimary
 
     Box(
         modifier = Modifier
@@ -144,10 +142,6 @@ fun SettingsScreen(
             Button(
                 onClick = { onBackToStart() },
                 modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = buttonBackgroundColor,
-                    contentColor = buttonTextColor
-                )
             ) {
                 Text(
                     text = "POWRÓT DO MENU",

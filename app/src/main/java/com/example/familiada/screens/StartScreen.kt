@@ -20,8 +20,6 @@ fun StartScreen(
     ) {
     val backgroundColor = MaterialTheme.colorScheme.background
     val headlineColor = MaterialTheme.colorScheme.primaryContainer
-    val buttonBackgroundColor = MaterialTheme.colorScheme.primary
-    val buttonTextColor = MaterialTheme.colorScheme.onPrimary
 
     Box(
         modifier = Modifier
@@ -44,10 +42,6 @@ fun StartScreen(
             Button(
                 onClick = { onStartGame() },
                 modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = buttonBackgroundColor,
-                    contentColor = buttonTextColor
-                )
             ) {
                 Text(
                     text = "NOWA GRA",
@@ -58,10 +52,6 @@ fun StartScreen(
             Button(
                 onClick = { onRules() },
                 modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = buttonBackgroundColor,
-                    contentColor = buttonTextColor
-                )
             ) {
                 Text(
                     text = "ZASADY GRY",
@@ -72,10 +62,6 @@ fun StartScreen(
             Button(
                 onClick = { onSettings() },
                 modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = buttonBackgroundColor,
-                    contentColor = buttonTextColor
-                )
             ) {
                 Text(
                     text = "USTAWIENIA",
