@@ -15,31 +15,27 @@ import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFFFFC107), // Żółty
-    secondary = Color(0xFF757575), // Szary
-    tertiary = Color(0xFFD32F2F), // Czerwony
+    secondary = Color.Black,
     background = Color.Black,
-    surface = Color(0xFF121212), // Ciemny szary
+    surface = Color.Black,
     onPrimary = Color.Black,
     onSecondary = Color.White,
-    onTertiary = Color.White,
     onBackground = Color.White,
     onSurface = Color.White,
-    primaryContainer = Color(0xFFFFC107) // Kolor nagłówków
+    primaryContainer = Color(0xFFFFC107)
 
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFFFFC107), // Żółty
     secondary = Color(0xFFBDBDBD), // Jasny szary
-    tertiary = Color(0xFFD32F2F), // Czerwony
     background = Color(0xFFFFFBFE), // Biały,ale nie do końca
     surface = Color(0xFFFFFBFE),
     onPrimary = Color.Black,
     onSecondary = Color.Black,
-    onTertiary = Color.White,
     onBackground = Color.Black,
     onSurface = Color.Black,
-    primaryContainer = Color.Black // Kolor nagłówków
+    primaryContainer = Color.Black
 )
 
 @Composable

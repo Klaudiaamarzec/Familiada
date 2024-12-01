@@ -36,9 +36,15 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
     var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) } // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
 
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val textColor = MaterialTheme.colorScheme.primaryContainer
+    val iconColor = MaterialTheme.colorScheme.primaryContainer
+    val borderColor = MaterialTheme.colorScheme.primaryContainer
+
+
     Column(modifier = modifier
         .fillMaxSize()
-        .background(Color.Black)
+        .background(backgroundColor)
         .pointerInput(Unit) {
             detectTapGestures(onTap = {
                 keyboardController?.hide()
@@ -53,14 +59,14 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
                 Icon(
                     imageVector = Icons.Filled.Person,
                     contentDescription = "Drużyna",
-                    tint = Color.Yellow,
+                    tint = iconColor,
                     modifier = Modifier.size(32.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = gameController.getCurrentTeam(),
                     style = TextStyle(
-                        color = Color.Yellow,
+                        color = textColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = MaterialTheme.typography.bodyLarge.fontSize
                     )
@@ -71,14 +77,14 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
                 Icon(
                     imageVector = Icons.Filled.Star,
                     contentDescription = "Punkty",
-                    tint = Color.Yellow,
+                    tint = iconColor,
                     modifier = Modifier.size(32.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "${gameController.getScore()} pkt",
                     style = TextStyle(
-                        color = Color.Yellow,
+                        color = textColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = MaterialTheme.typography.bodyLarge.fontSize
                     )
@@ -88,7 +94,7 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
 
         HorizontalDivider(
             thickness = 1.dp,
-            color = Color.Yellow
+            color = borderColor
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -99,7 +105,7 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
 
                 Text(
                     text = it.question,
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Yellow, fontSize = 24.sp),
+                    style = MaterialTheme.typography.bodyLarge.copy(color = textColor, fontSize = 24.sp),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
@@ -112,11 +118,10 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
                     Surface(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
-                            .border(1.dp, Color.Yellow)
+                            .border(1.dp, borderColor)
                             .clip(RoundedCornerShape(16.dp))
                             .padding(16.dp)
-                            .fillMaxWidth(0.85f),
-                        color = Color.Black
+                            .fillMaxWidth(0.85f)
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             it.answers.forEach { answer ->
@@ -127,12 +132,12 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
                                 ) {
                                     Text(
                                         text = if (revealedAnswers[answer.text] == true) answer.text else "..................",
-                                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Yellow, fontSize = 20.sp),
+                                        style = MaterialTheme.typography.bodyMedium.copy(color = textColor, fontSize = 20.sp),
                                         modifier = Modifier.weight(1f)
                                     )
                                     Text(
                                         text = if (revealedAnswers[answer.text] == true) "${answer.points}" else "",
-                                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Yellow, fontSize = 20.sp),
+                                        style = MaterialTheme.typography.bodyMedium.copy(color = textColor, fontSize = 20.sp),
                                         modifier = Modifier.align(Alignment.CenterVertically)
                                     )
                                 }
@@ -150,7 +155,7 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
                                 contentDescription = "Close",
-                                tint = Color.Yellow,
+                                tint = iconColor,
                                 modifier = Modifier
                                     .size(48.dp)
                                     .padding(bottom = 8.dp)
@@ -163,7 +168,7 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
             Text(
                 text = "Ładowanie pytań...",
                 modifier = Modifier.fillMaxSize(),
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Yellow)
+                style = MaterialTheme.typography.bodyLarge.copy(color = textColor)
             )
         }
 
@@ -176,11 +181,11 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
             TextField(
                 value = answerText,
                 onValueChange = { answerText = it },
-                label = { Text(text = "Wpisz odpowiedź", color = Color.Yellow) },
-                textStyle = TextStyle(color = Color.Yellow, fontSize = 20.sp),
+                label = { Text(text = "Wpisz odpowiedź", color = textColor) },
+                textStyle = TextStyle(color = textColor, fontSize = 20.sp),
                 modifier = Modifier
                     .weight(1f)
-                    .border(1.dp, Color.Yellow, RoundedCornerShape(8.dp)),
+                    .border(1.dp, borderColor, RoundedCornerShape(8.dp)),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text
                 )
@@ -199,13 +204,11 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context) {
 
                     answerText = ""
                     keyboardController?.hide()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                }
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = "Wyślij odpowiedź",
-                    tint = Color.Black
+                    contentDescription = "Wyślij odpowiedź"
                 )
             }
         }
