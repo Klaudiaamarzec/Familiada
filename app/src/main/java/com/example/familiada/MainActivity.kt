@@ -7,16 +7,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.familiada.screens.GamePreparationScreen
 import com.example.familiada.screens.GameScreen
-import com.example.familiada.screens.StartScreen
+import com.example.familiada.screens.PlayersSelectionScreen
 import com.example.familiada.screens.RulesScreen
 import com.example.familiada.screens.SettingsScreen
-import com.example.familiada.screens.PlayersSelectionScreen
-import com.example.familiada.screens.GamePreparationScreen
+import com.example.familiada.screens.StartScreen
 import com.example.familiada.ui.theme.FamiliadaTheme
 
 class MainActivity : ComponentActivity() {
-    private var currentScreen: @Composable () -> Unit = { StartScreen(onStartGame = { navigateToPlayersSelection() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() }) }
+    private var currentScreen: @Composable () -> Unit = {
+        StartScreen(onStartGame = { navigateToPlayersSelection() },
+            onRules = { navigateToRules() },
+            onSettings = { navigateToSettings() })
+    }
     private var isDarkThemeState = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,14 +36,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun startGame() {
-        val isSoundEnabled = getSharedPreferences("AppSettings", MODE_PRIVATE).getBoolean("isSoundEnabled", false)
-        val isTimeLimitEnabled = getSharedPreferences("AppSettings", MODE_PRIVATE).getBoolean("isTimeLimitEnabled", false)
+    private fun startGame(team1: List<String>, team2: List<String>) {
+        val isSoundEnabled =
+            getSharedPreferences("AppSettings", MODE_PRIVATE).getBoolean("isSoundEnabled", false)
+        val isTimeLimitEnabled = getSharedPreferences("AppSettings", MODE_PRIVATE).getBoolean(
+            "isTimeLimitEnabled",
+            false
+        )
 
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 val context = LocalContext.current
-                GameScreen(context = context, isSoundEnabled = isSoundEnabled, isTimeLimitEnabled = isTimeLimitEnabled)
+                GameScreen(
+                    context = context,
+                    team1Players = team1,
+                    team2Players = team2,
+                    isSoundEnabled = isSoundEnabled,
+                    isTimeLimitEnabled = isTimeLimitEnabled
+                )
             }
         }
         setContent {
@@ -52,7 +66,10 @@ class MainActivity : ComponentActivity() {
     private fun navigateToStart() {
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
-                StartScreen(onStartGame = { navigateToPlayersSelection() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
+                StartScreen(
+                    onStartGame = { navigateToPlayersSelection() },
+                    onRules = { navigateToRules() },
+                    onSettings = { navigateToSettings() })
             }
         }
         setContent {
@@ -99,7 +116,12 @@ class MainActivity : ComponentActivity() {
     private fun navigateToPlayersSelection() {
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
-                PlayersSelectionScreen(onPlayersConfirmed = { team1, team2 -> navigateToGamePreparation(team1, team2)})
+                PlayersSelectionScreen(onPlayersConfirmed = { team1, team2 ->
+                    navigateToGamePreparation(
+                        team1,
+                        team2
+                    )
+                })
             }
         }
         setContent {
@@ -112,7 +134,10 @@ class MainActivity : ComponentActivity() {
     private fun navigateToGamePreparation(team1: List<String>, team2: List<String>) {
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
-                GamePreparationScreen(team1 = team1, team2 = team2, onStartGame = { startGame() })
+                GamePreparationScreen(
+                    team1 = team1,
+                    team2 = team2,
+                    onStartGame = { startGame(team1, team2) })
             }
         }
         setContent {
@@ -126,7 +151,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun PreviewStartScreen() {
         FamiliadaTheme {
-            StartScreen(onStartGame = { navigateToPlayersSelection() }, onRules = { navigateToRules() }, onSettings = { navigateToSettings() })
+            StartScreen(
+                onStartGame = { navigateToPlayersSelection() },
+                onRules = { navigateToRules() },
+                onSettings = { navigateToSettings() })
         }
     }
 }
