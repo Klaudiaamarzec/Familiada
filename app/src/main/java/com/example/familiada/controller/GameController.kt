@@ -38,8 +38,8 @@ class GameController(
     private var team1PlayerIdx = 0;
     private var team2PlayerIdx = 0;
     private var roundNumber = 1;
-    private var stolenRound = false;
-    private var gameOver = false;
+    private var stolenRound = false
+    private var gameOver = false
 
     private var timerJob: Job? = null
     var remainingTime by mutableStateOf(60)
@@ -50,6 +50,20 @@ class GameController(
             team1Queue[team1PlayerIdx]
         } else team2Queue[team2PlayerIdx]
     }
+
+    var answeringTeam: String? = null // Przechowuje nazwę drużyny odpowiadającej
+
+    fun selectTeam(team: String) {
+        if (answeringTeam == null) {
+            answeringTeam = team
+            isTeam1Turn = team == "Drużyna 1"
+        }
+    }
+
+    fun resetAnsweringTeam() {
+        answeringTeam = null
+    }
+
 
     fun isGameOver(): Boolean {
         return gameOver
@@ -78,8 +92,8 @@ class GameController(
     private fun normalizeText(text: String): String {
         // Usuwanięcie polskich znaków i zamiana na same małe litery
         val normalizedText = Normalizer.normalize(text, Normalizer.Form.NFD).replace(
-                Regex("\\p{InCombiningDiacriticalMarks}"), ""
-            ) // Usuwanie znaków diakrytycznych
+            Regex("\\p{InCombiningDiacriticalMarks}"), ""
+        ) // Usuwanie znaków diakrytycznych
             .lowercase()
         return normalizedText
     }
@@ -114,8 +128,7 @@ class GameController(
                     scoreTeam2 += correctAnswer.points + scoreTeam1
                 }
                 nextQuestion()
-                resetTeamAnswerCounts()
-                resetTeamPlayerIndexes()
+                resetTeam()
                 stolenRound = false;
             } else {
                 // Dodanie punktów do drużyny
@@ -131,7 +144,7 @@ class GameController(
                 // Sprawdzenie, czy drużyna zgadła wszystkie odpowiedzi
                 if (correctAnswersTeam1 == question.answers.size && isTeam1Turn || correctAnswersTeam2 == question.answers.size && !isTeam1Turn) {
                     playSound(R.raw.all_corect)
-                    switchTeam()
+                    resetTeam()
                     nextQuestion()
                 } else {
                     playSound(R.raw.correct_answer)
@@ -157,8 +170,7 @@ class GameController(
                 }
             } else {
                 playSound(R.raw.wrong_answer)
-                resetTeamAnswerCounts()
-                resetTeamPlayerIndexes()
+                resetTeam()
                 nextQuestion()
                 stolenRound = false;
             }
@@ -166,7 +178,6 @@ class GameController(
         }
 
     }
-
 
     fun getScore(): Int {
         return if (isTeam1Turn) scoreTeam1 else scoreTeam2
@@ -195,8 +206,8 @@ class GameController(
         isTeam1Turn = !isTeam1Turn
     }
 
-    private fun switchTeam() {
-        isTeam1Turn = !isTeam1Turn
+    private fun resetTeam() {
+        answeringTeam = null
         resetTeamAnswerCounts()
         resetTeamPlayerIndexes()
 
@@ -205,13 +216,16 @@ class GameController(
     private fun nextQuestion() {
         currentQuestionIndex++
         roundNumber++
+        if (!stolenRound) {
+            resetAnsweringTeam()
+        }
         if (roundNumber > 10) {
             gameOver = true;
         }
     }
 
     fun getCurrentTeam(): String {
-        return if (isTeam1Turn) "Drużyna 1" else "Drużyna 2"
+        return if (answeringTeam !== null) answeringTeam!! else "?"
     }
 
     fun getWinnerTeam(): String? {

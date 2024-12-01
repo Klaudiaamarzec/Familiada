@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -74,7 +76,7 @@ fun GameScreen(
     val question = gameController.getCurrentQuestion()
     var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) }  // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
-
+    var activeTeam by remember { mutableStateOf<String?>(null) }
 
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.primaryContainer
@@ -125,13 +127,13 @@ fun GameScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Filled.Info,
-                    contentDescription = "Runda",
+                    contentDescription = "Numer rundy",
                     tint = iconColor,
                     modifier = Modifier.size(32.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = gameController.getRoundNumber().toString(),
+                    text = "Runda nr ${gameController.getRoundNumber()}",
                     style = TextStyle(
                         color = textColor,
                         fontWeight = FontWeight.Bold,
@@ -277,11 +279,17 @@ fun GameScreen(
                 textStyle = TextStyle(color = textColor, fontSize = 20.sp),
                 modifier = Modifier
                     .weight(1f)
-                    .border(1.dp, borderColor, RoundedCornerShape(8.dp)),
+                    .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                    .then(
+                        if (gameController.answeringTeam == null) Modifier.background(Color.Gray) else Modifier
+                    ),
+                enabled = gameController.answeringTeam != null, // Blokada, jeśli drużyna nie została wybrana
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text
                 )
             )
+
+
 
             Spacer(modifier = Modifier.width(8.dp))
 
@@ -307,22 +315,51 @@ fun GameScreen(
             }
         }
 
-    }
-    if (isTimeLimitEnabled) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Czas: ${gameController.remainingTime} s",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = textColor,
-                    fontWeight = FontWeight.Bold
-                )
-            )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(
+                onClick = {
+                    if (gameController.answeringTeam == null) {
+                        gameController.selectTeam("Drużyna 1")
+                    }
+                },
+                enabled = activeTeam == null,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+            ) {
+                Text("Drużyna 1", color = Color.Black)
+            }
+
+            Button(
+                onClick = {
+                    if (gameController.answeringTeam == null) {
+                        gameController.selectTeam("Drużyna 2")
+                    }
+                },
+                enabled = activeTeam == null,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text("Drużyna 2", color = Color.White)
+            }
+
         }
+
+
+        if (isTimeLimitEnabled) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Czas: ${gameController.remainingTime} s",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = textColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        }
+
     }
 }
 
