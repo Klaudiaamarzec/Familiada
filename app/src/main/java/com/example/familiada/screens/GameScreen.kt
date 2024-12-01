@@ -1,39 +1,82 @@
 package com.example.familiada.screens
 
-import android.annotation.SuppressLint
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import android.content.Context
-import androidx.compose.foundation.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.*
-import androidx.compose.ui.platform.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.familiada.ui.theme.FamiliadaTheme
 import com.example.familiada.controller.GameController
+import com.example.familiada.ui.theme.FamiliadaTheme
 
-@SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: Boolean, isTimeLimitEnabled: Boolean) {
+fun GameScreen(
+    team1Players: List<String>,
+    team2Players: List<String>,
+    modifier: Modifier = Modifier,
+    context: Context,
+    isSoundEnabled: Boolean,
+    isTimeLimitEnabled: Boolean
+) {
 
-    val gameController = remember { GameController(context, isSoundEnabled) }
+    val gameController = remember {
+        GameController(
+            team1Players = team1Players,
+            team2Players = team2Players,
+            context = context,
+            isSoundEnabled = isSoundEnabled
+        )
+    }
+
     var answerText by remember { mutableStateOf("") }
     val question = gameController.getCurrentQuestion()
-    var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) } // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
+    var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) }  // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
+    var activeTeam by remember { mutableStateOf<String?>(null) }
 
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.primaryContainer
@@ -43,6 +86,7 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
     LaunchedEffect(question) {
         gameController.resetTimer()
     }
+
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -55,7 +99,12 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
     ) {
 
         // Nagłówek
-        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             // Drużyna
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -67,6 +116,24 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = gameController.getCurrentTeam(),
+                    style = TextStyle(
+                        color = textColor,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = MaterialTheme.typography.bodyLarge.fontSize
+                    )
+                )
+            }
+            // Runda
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = "Numer rundy",
+                    tint = iconColor,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Runda nr ${gameController.getRoundNumber()}",
                     style = TextStyle(
                         color = textColor,
                         fontWeight = FontWeight.Bold,
@@ -99,6 +166,22 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
             color = borderColor
         )
 
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Teraz odpowiada: ${gameController.getPlayer()}", // Display the active player's name
+                style = TextStyle(
+                    color = textColor,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                    .padding(8.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // Pytanie
@@ -107,7 +190,10 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
 
                 Text(
                     text = it.question,
-                    style = MaterialTheme.typography.bodyLarge.copy(color = textColor, fontSize = 24.sp),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = textColor,
+                        fontSize = 24.sp
+                    ),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
@@ -134,12 +220,18 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
                                 ) {
                                     Text(
                                         text = if (revealedAnswers[answer.text] == true) answer.text else "..................",
-                                        style = MaterialTheme.typography.bodyMedium.copy(color = textColor, fontSize = 20.sp),
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = textColor,
+                                            fontSize = 20.sp
+                                        ),
                                         modifier = Modifier.weight(1f)
                                     )
                                     Text(
                                         text = if (revealedAnswers[answer.text] == true) "${answer.points}" else "",
-                                        style = MaterialTheme.typography.bodyMedium.copy(color = textColor, fontSize = 20.sp),
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = textColor,
+                                            fontSize = 20.sp
+                                        ),
                                         modifier = Modifier.align(Alignment.CenterVertically)
                                     )
                                 }
@@ -187,11 +279,17 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
                 textStyle = TextStyle(color = textColor, fontSize = 20.sp),
                 modifier = Modifier
                     .weight(1f)
-                    .border(1.dp, borderColor, RoundedCornerShape(8.dp)),
+                    .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                    .then(
+                        if (gameController.answeringTeam == null) Modifier.background(Color.Gray) else Modifier
+                    ),
+                enabled = gameController.answeringTeam != null, // Blokada, jeśli drużyna nie została wybrana
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text
                 )
             )
+
+
 
             Spacer(modifier = Modifier.width(8.dp))
 
@@ -200,7 +298,7 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
 
                     val result = gameController.submitAnswer(answerText)
 
-                    if(result) {
+                    if (result) {
                         revealedAnswers[answerText] = true
                     }
 
@@ -217,21 +315,51 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
             }
         }
 
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(
+                onClick = {
+                    if (gameController.answeringTeam == null) {
+                        gameController.selectTeam("Drużyna 1")
+                    }
+                },
+                enabled = activeTeam == null,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+            ) {
+                Text("Drużyna 1", color = Color.Black)
+            }
+
+            Button(
+                onClick = {
+                    if (gameController.answeringTeam == null) {
+                        gameController.selectTeam("Drużyna 2")
+                    }
+                },
+                enabled = activeTeam == null,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text("Drużyna 2", color = Color.White)
+            }
+
+        }
+
+
         if (isTimeLimitEnabled) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
-            ){
-            Text(
-                text = "Czas: ${gameController.remainingTime} s",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = textColor,
-                    fontWeight = FontWeight.Bold
-                ))
+            ) {
+                Text(
+                    text = "Czas: ${gameController.remainingTime} s",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = textColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
         }
+
     }
 }
 
@@ -241,6 +369,12 @@ fun GameScreen(modifier: Modifier = Modifier, context: Context, isSoundEnabled: 
 fun GameScreenPreview() {
     val context = LocalContext.current
     FamiliadaTheme {
-        GameScreen(modifier = Modifier.fillMaxSize(), context = context, isSoundEnabled = true, isTimeLimitEnabled = true)
+        GameScreen(
+            modifier = Modifier.fillMaxSize(), context = context,
+            team1Players = listOf("Nile", "Amazon", "Yangtze"),
+            team2Players = listOf("Nile", "Amazon", "Yangtze"),
+            isTimeLimitEnabled = true,
+            isSoundEnabled = true
+        )
     }
 }
