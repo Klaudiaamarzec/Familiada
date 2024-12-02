@@ -115,13 +115,13 @@ class GameController(
 
         if (isTeam1Turn && team1PlayerIdx < team1Queue.size - 1) {
             team1PlayerIdx++
-        } else if (team2PlayerIdx < team2Queue.size - 1){
+        } else if (team2PlayerIdx < team2Queue.size - 1) {
             team2PlayerIdx++
         }
 
         stopTimer()
 
-        return if (correctAnswer != null) {
+        return if ((correctAnswer != null) && (revealedAnswers[correctAnswer.text] == false)) {
 
             revealedAnswers.keys.forEach { key ->
                 val normalizedKey = normalizeText(key)
@@ -142,6 +142,7 @@ class GameController(
                 nextQuestion()
                 resetTeamInfo()
                 stolenRound = false
+                playSound(R.raw.correct_answer)
             } else {
                 // Dodanie punktów do drużyny
                 if (isTeam1Turn) {
@@ -271,7 +272,7 @@ class GameController(
                 delay(1000)
                 remainingTime -= 1
             }
-            if (remainingTime == 0) {
+            if (remainingTime == 0 && isTimeLimitEnabled && answeringTeam !== null) {
                 submitAnswer("")
                 resetTimer()
             }

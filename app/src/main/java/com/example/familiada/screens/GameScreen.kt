@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.speech.RecognizerIntent
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,7 +62,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.familiada.controller.GameController
 import com.example.familiada.ui.theme.FamiliadaTheme
-import com.example.familiada.utils.normalizeText
 
 @Composable
 fun GameScreen(
@@ -87,13 +85,15 @@ fun GameScreen(
 
     var answerText by remember { mutableStateOf("") }
     val question = gameController.getCurrentQuestion()
-    var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) }  // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
 
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.primaryContainer
     val iconColor = MaterialTheme.colorScheme.primaryContainer
     val borderColor = MaterialTheme.colorScheme.primaryContainer
+    var timeLimitEnabled = isTimeLimitEnabled
+    var timeValue = gameController.remainingTime
+    var selectedTeam = gameController.answeringTeam
 
     LaunchedEffect(question) {
         gameController.resetTimer()
@@ -133,7 +133,6 @@ fun GameScreen(
                 keyboardController?.hide()
             })
         }) {
-
         // Nagłówek
         Row(
             modifier = Modifier
@@ -404,24 +403,22 @@ fun GameScreen(
                 )
             }
         }
-
-//        if (isTimeLimitEnabled) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (timeLimitEnabled && selectedTeam !== null) {
                 Text(
-                    text = "Czas: ${gameController.remainingTime} s",
+                    text = "Czas: $timeValue s",
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = textColor, fontWeight = FontWeight.Bold
                     )
                 )
             }
         }
-
-//    }
+    }
 }
 
 
