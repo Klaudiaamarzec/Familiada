@@ -2,6 +2,7 @@ package com.example.familiada.controller
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +22,8 @@ class GameController(
     private val context: Context,
     team1Players: List<String>,
     team2Players: List<String>,
-    private val isSoundEnabled: Boolean = true
+    private val isSoundEnabled: Boolean = true,
+    private val isTimeLimitEnabled: Boolean = true,
 ) {
 
     private val questions: List<Question> = loadQuestions(context)
@@ -44,6 +46,18 @@ class GameController(
     private var timerJob: Job? = null
     var remainingTime by mutableStateOf(60)
     private var timerActive by mutableStateOf(false)
+    var revealedAnswers: MutableMap<String, Boolean> = mutableMapOf()
+
+    init {
+        // Zainicjowanie mapy odpowiedz - zakryte/nie bool po stworzeniu obiektu
+        initializeRevealedAnswers()
+    }
+
+    private fun initializeRevealedAnswers() {
+        getCurrentQuestion()?.answers?.forEach { key ->
+            revealedAnswers.put(key.text, false)
+        }
+    }
 
     fun getPlayer(): String {
         return if (isTeam1Turn) {
@@ -58,6 +72,7 @@ class GameController(
             answeringTeam = team
             isTeam1Turn = team == "Drużyna 1"
         }
+
     }
 
     private fun resetAnsweringTeam() {
@@ -98,17 +113,24 @@ class GameController(
 
         }
 
-        if (isTeam1Turn) {
+        if (isTeam1Turn && team1PlayerIdx < team1Queue.size - 1) {
             team1PlayerIdx++
-        } else {
+        } else if (team2PlayerIdx < team2Queue.size - 1){
             team2PlayerIdx++
         }
-
-        //val correctAnswer = question?.answers?.find { it.text.equals(answerText, ignoreCase = true) }
 
         stopTimer()
 
         return if (correctAnswer != null) {
+
+            revealedAnswers.keys.forEach { key ->
+                val normalizedKey = normalizeText(key)
+                Log.i("map", key)
+                if (normalizedKey == normalizeText(correctAnswer.text)) {
+                    revealedAnswers[key] = true
+                }
+            }
+
             if (stolenRound) {
                 // Drużyna przejmuje punkty przeciwnej
                 playSound(R.raw.correct_answer)
@@ -140,6 +162,7 @@ class GameController(
                     playSound(R.raw.correct_answer)
                 }
             }
+            Log.i("GameController", "true")
             true
         } else {
             // Błędna odpowiedź
@@ -213,6 +236,7 @@ class GameController(
 
     private fun nextQuestion() {
         currentQuestionIndex++
+        initializeRevealedAnswers()
         roundNumber++
         if (!stolenRound) {
             resetAnsweringTeam()
@@ -242,7 +266,6 @@ class GameController(
 
     private fun startTimer() {
         if (timerActive) return
-
         timerJob = CoroutineScope(Dispatchers.Main).launch {
             while (remainingTime > 0) {
                 delay(1000)

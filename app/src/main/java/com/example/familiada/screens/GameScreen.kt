@@ -80,7 +80,8 @@ fun GameScreen(
             team1Players = team1Players,
             team2Players = team2Players,
             context = context,
-            isSoundEnabled = isSoundEnabled
+            isSoundEnabled = isSoundEnabled,
+            isTimeLimitEnabled = isTimeLimitEnabled
         )
     }
 
@@ -102,24 +103,12 @@ fun GameScreen(
 
     val handleAnswerSubmit = {
         val result = gameController.submitAnswer(answerText)
-        Log.i("", "${result}")
-        if (result) {
-            val normalizedAnswer = normalizeText(answerText)
-
-            // Iterowanie po odpowiedziach z uwzglednieniem roznicy wielkosci liter/polskich znakow
-            revealedAnswers.keys.forEach { key ->
-                val normalizedKey = normalizeText(key)
-
-                if (normalizedKey == normalizedAnswer) {
-                    revealedAnswers[key] = true
-                }
-            }
-        }
         answerText = ""
         keyboardController?.hide()
 
         gameController.resetTimer()
     }
+
 
     val speechRecognizerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -257,14 +246,14 @@ fun GameScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = if (revealedAnswers[answer.text] == true) answer.text else "..................",
+                                            text = if (gameController.revealedAnswers[answer.text] == true) answer.text else "..................",
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 color = textColor, fontSize = 20.sp
                                             ),
                                             modifier = Modifier.weight(1f)
                                         )
                                         Text(
-                                            text = if (revealedAnswers[answer.text] == true) "${answer.points}" else "",
+                                            text = if (gameController.revealedAnswers[answer.text] == true) "${answer.points}" else "",
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 color = textColor, fontSize = 20.sp
                                             ),
@@ -323,8 +312,6 @@ fun GameScreen(
                         keyboardType = KeyboardType.Text
                     )
                 )
-
-
 
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -418,7 +405,7 @@ fun GameScreen(
             }
         }
 
-        if (isTimeLimitEnabled) {
+//        if (isTimeLimitEnabled) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -434,7 +421,7 @@ fun GameScreen(
             }
         }
 
-    }
+//    }
 }
 
 
