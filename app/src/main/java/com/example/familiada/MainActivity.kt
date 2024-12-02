@@ -43,6 +43,10 @@ class MainActivity : ComponentActivity() {
             "isTimeLimitEnabled",
             false
         )
+        val isMicEnabled = getSharedPreferences("AppSettings", MODE_PRIVATE).getBoolean(
+            "isMicEnabled",
+            false
+        )
 
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
@@ -52,7 +56,8 @@ class MainActivity : ComponentActivity() {
                     team1Players = team1,
                     team2Players = team2,
                     isSoundEnabled = isSoundEnabled,
-                    isTimeLimitEnabled = isTimeLimitEnabled
+                    isTimeLimitEnabled = isTimeLimitEnabled,
+                    isMicEnabled = isMicEnabled
                 )
             }
         }

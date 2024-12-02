@@ -70,7 +70,8 @@ fun GameScreen(
     modifier: Modifier = Modifier,
     context: Context,
     isSoundEnabled: Boolean,
-    isTimeLimitEnabled: Boolean
+    isTimeLimitEnabled: Boolean,
+    isMicEnabled: Boolean
 ) {
 
     val gameController = remember {
@@ -94,6 +95,7 @@ fun GameScreen(
     var timeLimitEnabled = isTimeLimitEnabled
     var timeValue = gameController.remainingTime
     var selectedTeam = gameController.answeringTeam
+    val micEnabled = isMicEnabled
 
     LaunchedEffect(question) {
         gameController.resetTimer()
@@ -292,75 +294,71 @@ fun GameScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
-                    value = answerText,
-                    onValueChange = { answerText = it },
-                    label = { Text(text = "Wpisz odpowiedź", color = textColor) },
-                    textStyle = TextStyle(color = textColor, fontSize = 20.sp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                        .then(
-                            if (gameController.answeringTeam == null) Modifier.background(Color.Gray) else Modifier
-                        ),
-                    enabled = gameController.answeringTeam != null, // Blokada, jeśli drużyna nie została wybrana
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text
-                    )
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Button(onClick = {
-                    handleAnswerSubmit()
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowForward,
-                        contentDescription = "Wyślij odpowiedź"
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
                     .padding(horizontal = 32.dp, vertical = 32.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                // Odpowiadanie głosowe
-                Button(
-                    onClick = {
-                        // Sprawdzenie uprawnień
-                        if (ContextCompat.checkSelfPermission(
-                                context,
-                                Manifest.permission.RECORD_AUDIO
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                            intent.putExtra(
-                                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                            )
-                            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "pl-PL")
-                            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Mów teraz...")
+                if (!micEnabled) {
+                    TextField(
+                        value = answerText,
+                        onValueChange = { answerText = it },
+                        label = { Text(text = "Wpisz odpowiedź", color = textColor) },
+                        textStyle = TextStyle(color = textColor, fontSize = 20.sp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                            .then(
+                                if (gameController.answeringTeam == null) Modifier.background(Color.Gray) else Modifier
+                            ),
+                        enabled = gameController.answeringTeam != null, // Blokada, jeśli drużyna nie została wybrana
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text
+                        )
+                    )
 
-                            // Jeżeli przyznano uprawnienia, uruchom rozpoznawanie mowy
-                            speechRecognizerLauncher.launch(intent)
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                        } else {
-                            ActivityCompat.requestPermissions(
-                                context as Activity,
-                                arrayOf(Manifest.permission.RECORD_AUDIO),
-                                100
-                            )
-                        }
-                    },
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text("Mów")
+                    Button(onClick = {
+                        handleAnswerSubmit()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowForward,
+                            contentDescription = "Wyślij odpowiedź"
+                        )
+                    }
+                } else {
+                    // Odpowiadanie głosowe
+                    Button(
+                        onClick = {
+                            // Sprawdzenie uprawnień
+                            if (ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.RECORD_AUDIO
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                                intent.putExtra(
+                                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                )
+                                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "pl-PL")
+                                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Mów teraz...")
+
+                                // Jeżeli przyznano uprawnienia, uruchom rozpoznawanie mowy
+                                speechRecognizerLauncher.launch(intent)
+
+                            } else {
+                                ActivityCompat.requestPermissions(
+                                    context as Activity,
+                                    arrayOf(Manifest.permission.RECORD_AUDIO),
+                                    100
+                                )
+                            }
+                        },
+                        modifier = Modifier.height(64.dp).width(172.dp)
+                    ) {
+                        Text("Mów")
+                    }
                 }
             }
         }
@@ -433,7 +431,8 @@ fun GameScreenPreview() {
             team1Players = listOf("Nile", "Amazon", "Yangtze"),
             team2Players = listOf("Nile", "Amazon", "Yangtze"),
             isTimeLimitEnabled = true,
-            isSoundEnabled = true
+            isSoundEnabled = true,
+            isMicEnabled = true
         )
     }
 }
