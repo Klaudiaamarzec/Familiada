@@ -88,7 +88,6 @@ fun GameScreen(
     val question = gameController.getCurrentQuestion()
     var revealedAnswers by remember { mutableStateOf(mutableMapOf<String, Boolean>()) }  // Mapa odpowiedzi - true jeśli odkryta, false jeśli ukryta
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
-    var activeTeam by remember { mutableStateOf<String?>(null) }
 
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.primaryContainer
@@ -391,7 +390,7 @@ fun GameScreen(
                     if (gameController.answeringTeam == null) {
                         gameController.selectTeam("Drużyna 1")
                     }
-                }, enabled = activeTeam == null,
+                }, enabled = gameController.answeringTeam == null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (gameController.answeringTeam == "Drużyna 1") Color.Green else Color.LightGray
                 )
@@ -407,7 +406,7 @@ fun GameScreen(
                     if (gameController.answeringTeam == null) {
                         gameController.selectTeam("Drużyna 2")
                     }
-                }, enabled = activeTeam == null,
+                }, enabled = gameController.answeringTeam == null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (gameController.answeringTeam == "Drużyna 2") Color.Blue else Color.LightGray
                 )

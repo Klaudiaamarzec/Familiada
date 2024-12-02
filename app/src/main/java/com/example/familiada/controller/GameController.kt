@@ -160,7 +160,7 @@ class GameController(
                 }
             } else {
                 playSound(R.raw.wrong_answer)
-                resetTeamInfo()
+                resetTeam()
                 nextQuestion()
                 stolenRound = false
             }
@@ -193,7 +193,12 @@ class GameController(
         stolenRound = true
         resetTeamAnswerCounts()
         resetTeamPlayerIndexes()
-        isTeam1Turn = !isTeam1Turn
+        isTeam1Turn = !isTeam1Turn // TODO Zmienić aby uzywac wartości atomowych/enumu/flagi etc
+        answeringTeam = if (answeringTeam == "Drużyna 1") {
+            "Drużyna 2"
+        } else {
+            "Drużyna 1"
+        }
     }
 
     private fun resetTeam() {
