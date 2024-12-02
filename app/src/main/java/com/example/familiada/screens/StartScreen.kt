@@ -1,4 +1,5 @@
 package com.example.familiada.screens
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -14,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 fun StartScreen(
     onStartGame: () -> Unit,
     onRules: () -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
     ) {
     val backgroundColor = MaterialTheme.colorScheme.background
     val headlineColor = MaterialTheme.colorScheme.primaryContainer

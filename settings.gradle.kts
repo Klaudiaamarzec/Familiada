@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Familiada"
+rootProject.name = "familiada"
 include(":app")
+ 

@@ -118,7 +118,7 @@ class GameController(
                     scoreTeam2 += correctAnswer.points + scoreTeam1
                 }
                 nextQuestion()
-                resetTeam()
+                resetTeamInfo()
                 stolenRound = false
             } else {
                 // Dodanie punktów do drużyny
@@ -160,7 +160,7 @@ class GameController(
                 }
             } else {
                 playSound(R.raw.wrong_answer)
-                resetTeam()
+                resetTeamInfo()
                 nextQuestion()
                 stolenRound = false
             }
@@ -198,9 +198,12 @@ class GameController(
 
     private fun resetTeam() {
         answeringTeam = null
+        resetTeamInfo()
+    }
+
+    private fun resetTeamInfo() {
         resetTeamAnswerCounts()
         resetTeamPlayerIndexes()
-
     }
 
     private fun nextQuestion() {

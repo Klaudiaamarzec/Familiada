@@ -1,11 +1,11 @@
 package com.example.familiada.utils
 
 import android.content.Context
+import android.util.Log
 import com.example.familiada.R
 import com.example.familiada.data.Question
 import kotlinx.serialization.json.Json
 import java.io.InputStreamReader
-import android.util.Log
 
 fun loadQuestions(context: Context): List<Question> {
     return try {
