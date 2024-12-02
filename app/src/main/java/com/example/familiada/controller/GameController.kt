@@ -9,12 +9,12 @@ import androidx.compose.runtime.setValue
 import com.example.familiada.R
 import com.example.familiada.data.Question
 import com.example.familiada.utils.loadQuestions
+import com.example.familiada.utils.normalizeText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.Normalizer
 import kotlin.random.Random
 
 class GameController(
@@ -86,15 +86,6 @@ class GameController(
     // Metody do manipulowania stanem gry
     fun getCurrentQuestion(): Question? {
         return questions.getOrNull(currentQuestionIndex)
-    }
-
-    private fun normalizeText(text: String): String {
-        // Usuwanięcie polskich znaków i zamiana na same małe litery
-        val normalizedText = Normalizer.normalize(text, Normalizer.Form.NFD).replace(
-            Regex("\\p{InCombiningDiacriticalMarks}"), ""
-        ) // Usuwanie znaków diakrytycznych
-            .lowercase()
-        return normalizedText
     }
 
     fun submitAnswer(answerText: String): Boolean {

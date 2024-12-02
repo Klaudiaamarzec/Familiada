@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -55,7 +56,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,7 +63,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.familiada.controller.GameController
 import com.example.familiada.ui.theme.FamiliadaTheme
-import java.util.Locale
+import com.example.familiada.utils.normalizeText
 
 @Composable
 fun GameScreen(
@@ -103,11 +103,19 @@ fun GameScreen(
 
     val handleAnswerSubmit = {
         val result = gameController.submitAnswer(answerText)
-
+        Log.i("", "${result}")
         if (result) {
-            revealedAnswers[answerText] = true
-        }
+            val normalizedAnswer = normalizeText(answerText)
 
+            // Iterowanie po odpowiedziach z uwzglednieniem roznicy wielkosci liter/polskich znakow
+            revealedAnswers.keys.forEach { key ->
+                val normalizedKey = normalizeText(key)
+
+                if (normalizedKey == normalizedAnswer) {
+                    revealedAnswers[key] = true
+                }
+            }
+        }
         answerText = ""
         keyboardController?.hide()
 
