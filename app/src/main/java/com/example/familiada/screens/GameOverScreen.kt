@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun GameOverScreen (winnerTeam: Number){
+fun GameOverScreen(scoreTeam1: Int, scoreTeam2: Int) {
     //    TODO Complete
     Box(
         modifier = Modifier
@@ -21,7 +21,7 @@ fun GameOverScreen (winnerTeam: Number){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Wygrywa drużyna ${winnerTeam}",
+                text = "Wygrywa drużyna ...",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.Bold
                 )

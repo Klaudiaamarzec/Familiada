@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.familiada.screens.GameOverScreen
 import com.example.familiada.screens.GamePreparationScreen
 import com.example.familiada.screens.GameScreen
 import com.example.familiada.screens.PlayersSelectionScreen
@@ -57,7 +58,10 @@ class MainActivity : ComponentActivity() {
                     team2Players = team2,
                     isSoundEnabled = isSoundEnabled,
                     isTimeLimitEnabled = isTimeLimitEnabled,
-                    isMicEnabled = isMicEnabled
+                    isMicEnabled = isMicEnabled,
+                    onGameOver = { scoreTeam1, scoreTeam2 ->
+                        navigateToGameOverScreen(scoreTeam1, scoreTeam2)
+                    }
                 )
             }
         }
@@ -143,6 +147,22 @@ class MainActivity : ComponentActivity() {
                     team1 = team1,
                     team2 = team2,
                     onStartGame = { startGame(team1, team2) })
+            }
+        }
+        setContent {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
+                currentScreen()
+            }
+        }
+    }
+
+    private fun navigateToGameOverScreen(team1Score: Int, team2Score: Int) {
+        currentScreen = {
+            FamiliadaTheme(darkTheme = isDarkThemeState.value) {
+                GameOverScreen(
+                    scoreTeam1 = team1Score,
+                    scoreTeam2 = team2Score
+                )
             }
         }
         setContent {

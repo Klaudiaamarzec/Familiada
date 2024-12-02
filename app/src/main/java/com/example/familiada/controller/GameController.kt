@@ -65,6 +65,14 @@ class GameController(
         } else team2Queue[team2PlayerIdx]
     }
 
+    fun getScoreTeam1(): Int {
+        return scoreTeam1
+    }
+
+    fun getScoreTeam2(): Int {
+        return scoreTeam2
+    }
+
     var answeringTeam: String? = null // Przechowuje nazwę drużyny odpowiadającej
 
     fun selectTeam(team: String) {
@@ -184,8 +192,8 @@ class GameController(
                 }
             } else {
                 playSound(R.raw.wrong_answer)
-                resetTeam()
                 nextQuestion()
+                resetTeam()
                 stolenRound = false
             }
             false

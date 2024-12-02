@@ -26,7 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
@@ -71,7 +71,8 @@ fun GameScreen(
     context: Context,
     isSoundEnabled: Boolean,
     isTimeLimitEnabled: Boolean,
-    isMicEnabled: Boolean
+    isMicEnabled: Boolean,
+    onGameOver: (Int, Int) -> Unit
 ) {
 
     val gameController = remember {
@@ -82,6 +83,12 @@ fun GameScreen(
             isSoundEnabled = isSoundEnabled,
             isTimeLimitEnabled = isTimeLimitEnabled
         )
+    }
+
+    if (gameController.isGameOver()) {
+        val scoreTeam1 = gameController.getScoreTeam1()
+        val scoreTeam2 = gameController.getScoreTeam2()
+        onGameOver(scoreTeam1, scoreTeam2)
     }
 
     var answerText by remember { mutableStateOf("") }
@@ -104,7 +111,7 @@ fun GameScreen(
     val context = LocalContext.current
 
     val handleAnswerSubmit = {
-        val result = gameController.submitAnswer(answerText)
+        gameController.submitAnswer(answerText)
         answerText = ""
         keyboardController?.hide()
 
@@ -112,19 +119,20 @@ fun GameScreen(
     }
 
 
-    val speechRecognizerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            val spokenText =
-                result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
-            if (spokenText != null) {
-                answerText = spokenText
-                handleAnswerSubmit()
-            } else {
-                Toast.makeText(context, "Nie udało się rozpoznać głosu", Toast.LENGTH_SHORT).show()
-            }
-        }
-    )
+    val speechRecognizerLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = { result ->
+                val spokenText =
+                    result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                        ?.firstOrNull()
+                if (spokenText != null) {
+                    answerText = spokenText
+                    handleAnswerSubmit()
+                } else {
+                    Toast.makeText(context, "Nie udało się rozpoznać głosu", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
 
 
     Column(modifier = modifier
@@ -322,7 +330,7 @@ fun GameScreen(
                         handleAnswerSubmit()
                     }) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowForward,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = "Wyślij odpowiedź"
                         )
                     }
@@ -332,8 +340,7 @@ fun GameScreen(
                         onClick = {
                             // Sprawdzenie uprawnień
                             if (ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.RECORD_AUDIO
+                                    context, Manifest.permission.RECORD_AUDIO
                                 ) == PackageManager.PERMISSION_GRANTED
                             ) {
                                 val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -354,8 +361,9 @@ fun GameScreen(
                                     100
                                 )
                             }
-                        },
-                        modifier = Modifier.height(64.dp).width(172.dp)
+                        }, modifier = Modifier
+                            .height(64.dp)
+                            .width(172.dp)
                     ) {
                         Text("Mów")
                     }
@@ -374,7 +382,8 @@ fun GameScreen(
                     if (gameController.answeringTeam == null) {
                         gameController.selectTeam("Drużyna 1")
                     }
-                }, enabled = gameController.answeringTeam == null,
+                },
+                enabled = gameController.answeringTeam == null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (gameController.answeringTeam == "Drużyna 1") Color.Green else Color.LightGray
                 )
@@ -390,7 +399,8 @@ fun GameScreen(
                     if (gameController.answeringTeam == null) {
                         gameController.selectTeam("Drużyna 2")
                     }
-                }, enabled = gameController.answeringTeam == null,
+                },
+                enabled = gameController.answeringTeam == null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (gameController.answeringTeam == "Drużyna 2") Color.Blue else Color.LightGray
                 )
@@ -409,8 +419,7 @@ fun GameScreen(
         ) {
             if (timeLimitEnabled && selectedTeam !== null) {
                 Text(
-                    text = "Czas: $timeValue s",
-                    style = MaterialTheme.typography.bodyLarge.copy(
+                    text = "Czas: $timeValue s", style = MaterialTheme.typography.bodyLarge.copy(
                         color = textColor, fontWeight = FontWeight.Bold
                     )
                 )
@@ -425,14 +434,15 @@ fun GameScreen(
 fun GameScreenPreview() {
     val context = LocalContext.current
     FamiliadaTheme {
-        GameScreen(
-            modifier = Modifier.fillMaxSize(),
+        GameScreen(modifier = Modifier.fillMaxSize(),
             context = context,
             team1Players = listOf("Nile", "Amazon", "Yangtze"),
             team2Players = listOf("Nile", "Amazon", "Yangtze"),
             isTimeLimitEnabled = true,
             isSoundEnabled = true,
-            isMicEnabled = true
-        )
+            isMicEnabled = true,
+            onGameOver = { scoreTeam1, scoreTeam2 ->
+                {}
+            })
     }
 }
