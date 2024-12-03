@@ -121,10 +121,10 @@ class GameController(
 
         }
 
-        if (isTeam1Turn && team1PlayerIdx < team1Queue.size - 1) {
-            team1PlayerIdx++
-        } else if (team2PlayerIdx < team2Queue.size - 1) {
-            team2PlayerIdx++
+        if (isTeam1Turn) {
+            team1PlayerIdx = (team1PlayerIdx + 1) % team1Queue.size
+        } else {
+            team2PlayerIdx = (team2PlayerIdx + 1) % team2Queue.size
         }
 
         stopTimer()
@@ -133,7 +133,6 @@ class GameController(
 
             revealedAnswers.keys.forEach { key ->
                 val normalizedKey = normalizeText(key)
-                Log.i("map", key)
                 if (normalizedKey == normalizeText(correctAnswer.text)) {
                     revealedAnswers[key] = true
                 }
@@ -171,7 +170,6 @@ class GameController(
                     playSound(R.raw.correct_answer)
                 }
             }
-            Log.i("GameController", "true")
             true
         } else {
             // Błędna odpowiedź
@@ -217,8 +215,8 @@ class GameController(
     }
 
     private fun resetTeamPlayerIndexes() {
-        team1PlayerIdx = 0
-        team2PlayerIdx = 0
+        team1PlayerIdx = (roundNumber - 1) % team1Queue.size
+        team2PlayerIdx = (roundNumber - 1) % team2Queue.size
     }
 
     private fun handleStolenRound() {
