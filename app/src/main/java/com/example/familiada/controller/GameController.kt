@@ -2,12 +2,12 @@ package com.example.familiada.controller
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.familiada.R
+import com.example.familiada.data.Answer
 import com.example.familiada.data.Question
 import com.example.familiada.utils.loadQuestions
 import com.example.familiada.utils.normalizeText
@@ -49,7 +49,7 @@ class GameController(
     var revealedAnswers: MutableMap<String, Boolean> = mutableMapOf()
 
     init {
-        // Zainicjowanie mapy odpowiedz - zakryte/nie bool po stworzeniu obiektu
+        // Zainicjowanie mapy odpowiedz - zakryte/odkryte [bool] po stworzeniu obiektu
         initializeRevealedAnswers()
     }
 
@@ -73,12 +73,12 @@ class GameController(
         return scoreTeam2
     }
 
-    var answeringTeam: String? = null // Przechowuje nazwę drużyny odpowiadającej
+    var answeringTeam: Team? = null // Przechowuje nazwę drużyny odpowiadającej
 
-    fun selectTeam(team: String) {
+    fun selectTeam(team: Team) {
         if (answeringTeam === null) {
             answeringTeam = team
-            isTeam1Turn = team == "Drużyna 1"
+            isTeam1Turn = team == Team.FIRST
         }
 
     }
@@ -120,17 +120,10 @@ class GameController(
             normalizeText(it.text) == normalizedAnswerText
 
         }
-
-        if (isTeam1Turn) {
-            team1PlayerIdx = (team1PlayerIdx + 1) % team1Queue.size
-        } else {
-            team2PlayerIdx = (team2PlayerIdx + 1) % team2Queue.size
-        }
-
+        progressTeamQueue()
         stopTimer()
 
         return if ((correctAnswer != null) && (revealedAnswers[correctAnswer.text] == false)) {
-
             revealedAnswers.keys.forEach { key ->
                 val normalizedKey = normalizeText(key)
                 if (normalizedKey == normalizeText(correctAnswer.text)) {
@@ -152,15 +145,7 @@ class GameController(
                 playSound(R.raw.correct_answer)
             } else {
                 // Dodanie punktów do drużyny
-                if (isTeam1Turn) {
-                    scoreTeam1 += correctAnswer.points
-                    correctAnswersTeam1++
-
-                } else {
-                    scoreTeam2 += correctAnswer.points
-                    correctAnswersTeam2++
-                }
-
+                addPointsToTeam(correctAnswer)
                 // Sprawdzenie, czy drużyna zgadła wszystkie odpowiedzi
                 if (correctAnswersTeam1 == question.answers.size && isTeam1Turn || correctAnswersTeam2 == question.answers.size && !isTeam1Turn) {
                     playSound(R.raw.all_corect)
@@ -174,12 +159,7 @@ class GameController(
         } else {
             // Błędna odpowiedź
             if (!stolenRound) {
-                if (isTeam1Turn) {
-                    incorrectAnswersTeam1++
-                } else {
-                    incorrectAnswersTeam2++
-                }
-
+                addIncorrectQuestionsForTeam()
                 // Sprawdzenie, czy drużyna przekroczyła 3 błędne odpowiedzi
                 if (incorrectAnswersTeam1 >= 3 || incorrectAnswersTeam2 >= 3) {
                     playSound(R.raw.three_wrong)
@@ -199,6 +179,14 @@ class GameController(
 
     }
 
+    private fun progressTeamQueue() {
+        if (isTeam1Turn) {
+            team1PlayerIdx = (team1PlayerIdx + 1) % team1Queue.size
+        } else {
+            team2PlayerIdx = (team2PlayerIdx + 1) % team2Queue.size
+        }
+    }
+
     fun getScore(): Int {
         return if (isTeam1Turn) scoreTeam1 else scoreTeam2
     }
@@ -214,6 +202,25 @@ class GameController(
         incorrectAnswersTeam1 = 0
     }
 
+    private fun addPointsToTeam(correctAnswer: Answer) {
+        if (isTeam1Turn) {
+            scoreTeam1 += correctAnswer.points
+            correctAnswersTeam1++
+
+        } else {
+            scoreTeam2 += correctAnswer.points
+            correctAnswersTeam2++
+        }
+    }
+
+    private fun addIncorrectQuestionsForTeam() {
+        if (isTeam1Turn) {
+            incorrectAnswersTeam1++
+        } else {
+            incorrectAnswersTeam2++
+        }
+    }
+
     private fun resetTeamPlayerIndexes() {
         team1PlayerIdx = (roundNumber - 1) % team1Queue.size
         team2PlayerIdx = (roundNumber - 1) % team2Queue.size
@@ -223,11 +230,11 @@ class GameController(
         stolenRound = true
         resetTeamAnswerCounts()
         resetTeamPlayerIndexes()
-        isTeam1Turn = !isTeam1Turn // TODO Zmienić aby uzywac wartości atomowych/enumu/flagi etc
-        answeringTeam = if (answeringTeam == "Drużyna 1") {
-            "Drużyna 2"
+        isTeam1Turn = !isTeam1Turn
+        answeringTeam = if (answeringTeam == Team.FIRST) {
+            Team.SECOND
         } else {
-            "Drużyna 1"
+            Team.FIRST
         }
     }
 
@@ -253,22 +260,8 @@ class GameController(
         }
     }
 
-    fun getCurrentTeam(): String {
-        return if (answeringTeam !== null) answeringTeam!! else "?"
-    }
-
-    fun getWinnerTeam(): String? {
-        return when {
-            gameOver -> {
-                when {
-                    scoreTeam1 > scoreTeam2 -> "Drużyna 1 wygrywa!"
-                    scoreTeam2 > scoreTeam1 -> "Drużyna 2 wygrywa!"
-                    else -> "Remis!"
-                }
-            }
-
-            else -> null
-        }
+    fun getCurrentTeamName(): String {
+        return if (answeringTeam !== null) answeringTeam.toString() else "?"
     }
 
     private fun startTimer() {

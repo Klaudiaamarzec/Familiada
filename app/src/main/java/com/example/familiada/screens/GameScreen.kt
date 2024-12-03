@@ -39,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -118,7 +119,6 @@ fun GameScreen(
         gameController.resetTimer()
     }
 
-
     val speechRecognizerLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult(),
             onResult = { result ->
@@ -160,7 +160,7 @@ fun GameScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = gameController.getCurrentTeam(), style = TextStyle(
+                    text = gameController.getCurrentTeamName(), style = TextStyle(
                         color = textColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = MaterialTheme.typography.bodyLarge.fontSize
@@ -208,7 +208,7 @@ fun GameScreen(
         )
 
         if (gameController.answeringTeam != null) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 32.dp)) {
                 Text(
                     text = "Teraz odpowiada: ${gameController.getPlayer()}",
                     style = TextStyle(
@@ -307,33 +307,50 @@ fun GameScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 if (!micEnabled) {
-                    TextField(
-                        value = answerText,
-                        onValueChange = { answerText = it },
-                        label = { Text(text = "Wpisz odpowiedź", color = textColor) },
-                        textStyle = TextStyle(color = textColor, fontSize = 20.sp),
+                    // Jeżeli tryb mikrofonu wyłączony, pokaż pole do wpisania odpowiedzi
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                            .then(
-                                if (gameController.answeringTeam == null) Modifier.background(Color.Gray) else Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextField(
+                            value = answerText,
+                            onValueChange = { answerText = it },
+                            label = { Text(text = "Wpisz odpowiedź", color = textColor) },
+                            textStyle = TextStyle(color = textColor, fontSize = 20.sp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.background),
+                            enabled = gameController.answeringTeam != null,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text
                             ),
-                        enabled = gameController.answeringTeam != null, // Blokada, jeśli drużyna nie została wybrana
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Text
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.background,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                                disabledContainerColor = MaterialTheme.colorScheme.background,
+                                errorContainerColor = MaterialTheme.colorScheme.background
+                            )
                         )
-                    )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Button(onClick = {
-                        handleAnswerSubmit()
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Wyślij odpowiedź"
-                        )
+                        Button(
+                            onClick = {
+                                handleAnswerSubmit()
+                            },
+                            modifier = Modifier.height(56.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Wyślij odpowiedź"
+                            )
+                        }
                     }
+
                 } else {
                     // Odpowiadanie głosowe
                     Button(
@@ -380,34 +397,34 @@ fun GameScreen(
             Button(
                 onClick = {
                     if (gameController.answeringTeam == null) {
-                        gameController.selectTeam("Drużyna 1")
+                        gameController.selectTeam(Team.FIRST)
                     }
                 },
                 enabled = gameController.answeringTeam == null,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (gameController.answeringTeam == "Drużyna 1") Color.Green else Color.LightGray
+                    containerColor = if (gameController.answeringTeam == Team.FIRST) Color.Green else Color.LightGray
                 )
             ) {
                 Text(
                     "Drużyna 1",
-                    color = if (gameController.answeringTeam == "Drużyna 1") Color.White else Color.Black
+                    color = if (gameController.answeringTeam == Team.FIRST) Color.White else Color.Black
                 )
             }
 
             Button(
                 onClick = {
                     if (gameController.answeringTeam == null) {
-                        gameController.selectTeam("Drużyna 2")
+                        gameController.selectTeam(Team.SECOND)
                     }
                 },
                 enabled = gameController.answeringTeam == null,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (gameController.answeringTeam == "Drużyna 2") Color.Blue else Color.LightGray
+                    containerColor = if (gameController.answeringTeam == Team.SECOND) Color.Blue else Color.LightGray
                 )
             ) {
                 Text(
                     "Drużyna 2",
-                    color = if (gameController.answeringTeam == "Drużyna 2") Color.White else Color.Black
+                    color = if (gameController.answeringTeam == Team.SECOND) Color.White else Color.Black
                 )
             }
         }
