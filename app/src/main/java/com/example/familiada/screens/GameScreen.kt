@@ -97,7 +97,7 @@ fun GameScreen(
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
 
     val backgroundColor = MaterialTheme.colorScheme.background
-    val textColor = MaterialTheme.colorScheme.primaryContainer
+    val textColor = MaterialTheme.colorScheme.tertiary
     val iconColor = MaterialTheme.colorScheme.primaryContainer
     val borderColor = MaterialTheme.colorScheme.primaryContainer
     var timeLimitEnabled = isTimeLimitEnabled
@@ -208,7 +208,10 @@ fun GameScreen(
         )
 
         if (gameController.answeringTeam != null) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 32.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 32.dp)
+            ) {
                 Text(
                     text = "Teraz odpowiada: ${gameController.getPlayer()}",
                     style = TextStyle(
