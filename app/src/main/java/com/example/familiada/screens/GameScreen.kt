@@ -55,6 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -91,6 +92,9 @@ fun GameScreen(
         val scoreTeam2 = gameController.getScoreTeam2()
         onGameOver(scoreTeam1, scoreTeam2)
     }
+
+    val teamSelectionButtonWidth = 140.dp
+    val teamSelectionButtonHeight = 64.dp
 
     var answerText by remember { mutableStateOf("") }
     val question = gameController.getCurrentQuestion()
@@ -324,12 +328,14 @@ fun GameScreen(
                             textStyle = TextStyle(color = textColor, fontSize = 20.sp),
                             modifier = Modifier
                                 .weight(1f)
+                                .height(56.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .border(1.dp, borderColor, RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.colorScheme.background),
                             enabled = gameController.answeringTeam != null,
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Text
+                                keyboardType = KeyboardType.Text,
+                                autoCorrect = false
                             ),
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = MaterialTheme.colorScheme.background,
@@ -394,7 +400,7 @@ fun GameScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(vertical = 64.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
@@ -406,11 +412,16 @@ fun GameScreen(
                 enabled = gameController.answeringTeam == null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (gameController.answeringTeam == Team.FIRST) Color.Green else Color.LightGray
-                )
+                ),
+                modifier = Modifier
+                    .height(teamSelectionButtonHeight)
+                    .width(teamSelectionButtonWidth)
             ) {
                 Text(
                     "Drużyna 1",
-                    color = if (gameController.answeringTeam == Team.FIRST) Color.White else Color.Black
+                    color = if (gameController.answeringTeam == Team.FIRST) Color.White else Color.Black,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
@@ -423,14 +434,20 @@ fun GameScreen(
                 enabled = gameController.answeringTeam == null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (gameController.answeringTeam == Team.SECOND) Color.Blue else Color.LightGray
-                )
+                ),
+                modifier = Modifier
+                    .height(teamSelectionButtonHeight)
+                    .width(teamSelectionButtonWidth)
             ) {
                 Text(
                     "Drużyna 2",
-                    color = if (gameController.answeringTeam == Team.SECOND) Color.White else Color.Black
+                    color = if (gameController.answeringTeam == Team.SECOND) Color.White else Color.Black,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
