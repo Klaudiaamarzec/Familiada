@@ -101,7 +101,7 @@ fun GameScreen(
     val keyboardController = LocalSoftwareKeyboardController.current // Obsługa klawiatury
 
     val backgroundColor = MaterialTheme.colorScheme.background
-    val textColor = MaterialTheme.colorScheme.tertiary
+    val textColor = MaterialTheme.colorScheme.primaryContainer
     val iconColor = MaterialTheme.colorScheme.primaryContainer
     val borderColor = MaterialTheme.colorScheme.primaryContainer
     var timeLimitEnabled = isTimeLimitEnabled
