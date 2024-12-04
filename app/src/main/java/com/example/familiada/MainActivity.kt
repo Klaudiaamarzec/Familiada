@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     isTimeLimitEnabled = isTimeLimitEnabled,
                     isMicEnabled = isMicEnabled,
                     onGameOver = { scoreTeam1, scoreTeam2 ->
-                        navigateToGameOverScreen(scoreTeam1, scoreTeam2)
+                        navigateToGameOverScreen(scoreTeam1, scoreTeam2, team1, team2)
                     }
                 )
             }
@@ -91,7 +91,9 @@ class MainActivity : ComponentActivity() {
     private fun navigateToRules() {
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
-                RulesScreen()
+                RulesScreen(
+                    onBackToStart = { navigateToStart() }
+                )
             }
         }
         setContent {
@@ -156,12 +158,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun navigateToGameOverScreen(team1Score: Int, team2Score: Int) {
+    private fun navigateToGameOverScreen(team1Score: Int, team2Score: Int, team1: List<String>, team2: List<String>) {
         currentScreen = {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {
                 GameOverScreen(
                     scoreTeam1 = team1Score,
-                    scoreTeam2 = team2Score
+                    scoreTeam2 = team2Score,
+                    onPlayAgain = {startGame(team1,team2)},
+                    onBackToMenu = {navigateToStart()}
+
                 )
             }
         }
