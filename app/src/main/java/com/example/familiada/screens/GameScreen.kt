@@ -205,11 +205,29 @@ fun GameScreen(
                     )
                 )
             }
+
+
         }
 
         HorizontalDivider(
             thickness = 1.dp, color = borderColor
         )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 32.dp)
+        ) {
+            question?.let {
+                Column(modifier = Modifier.fillMaxWidth()) {
+
+                    Text(
+                        text = it.question, style = MaterialTheme.typography.bodyLarge.copy(
+                            color = textColor, fontSize = 24.sp
+                        ), modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+            }
+        }
 
         if (gameController.answeringTeam != null) {
             Row(
@@ -233,13 +251,6 @@ fun GameScreen(
             // Pytanie
             question?.let {
                 Column(modifier = Modifier.fillMaxWidth()) {
-
-                    Text(
-                        text = it.question, style = MaterialTheme.typography.bodyLarge.copy(
-                            color = textColor, fontSize = 24.sp
-                        ), modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-
                     // Ramka z odpowiedziami
                     Box(
                         modifier = Modifier
