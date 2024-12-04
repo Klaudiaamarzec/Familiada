@@ -133,7 +133,6 @@ class GameController(
 
             if (stolenRound) {
                 // Drużyna przejmuje punkty przeciwnej
-                playSound(R.raw.correct_answer)
                 if (isTeam1Turn) {
                     scoreTeam1 += correctAnswer.points + scoreTeam2
                 } else {
@@ -142,7 +141,7 @@ class GameController(
                 nextQuestion()
                 resetTeamInfo()
                 stolenRound = false
-                playSound(R.raw.correct_answer)
+                playSound(R.raw.all_corect)
             } else {
                 // Dodanie punktów do drużyny
                 addPointsToTeam(correctAnswer)
@@ -169,7 +168,7 @@ class GameController(
                     playSound(R.raw.wrong_answer)
                 }
             } else {
-                playSound(R.raw.wrong_answer)
+                playSound(R.raw.three_wrong)
                 nextQuestion()
                 resetTeam()
                 stolenRound = false
