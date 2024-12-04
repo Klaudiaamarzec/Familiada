@@ -73,7 +73,7 @@ class GameController(
         return scoreTeam2
     }
 
-    var answeringTeam: Team? = null // Przechowuje nazwę drużyny odpowiadającej
+    var answeringTeam: Team? = null // Przechowuje drużynę odpowiadającą
 
     fun selectTeam(team: Team) {
         if (answeringTeam === null) {
