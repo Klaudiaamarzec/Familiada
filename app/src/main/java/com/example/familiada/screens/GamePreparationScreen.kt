@@ -15,7 +15,7 @@ import kotlin.random.Random
 fun GamePreparationScreen(
     team1: List<String>,
     team2: List<String>,
-    onStartGame: () -> Unit
+    onStartGame: (List<String>, List<String>) -> Unit
 ){
     val shuffledTeam1 = remember { team1.shuffled(Random(System.currentTimeMillis())) }
     val shuffledTeam2 = remember { team2.shuffled(Random(System.currentTimeMillis())) }
@@ -78,7 +78,7 @@ fun GamePreparationScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { onStartGame() },
+                onClick = { onStartGame(shuffledTeam1, shuffledTeam2) },
                 modifier = Modifier.padding(16.dp),
             ) {
                 Text(

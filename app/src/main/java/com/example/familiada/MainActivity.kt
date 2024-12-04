@@ -148,7 +148,9 @@ class MainActivity : ComponentActivity() {
                 GamePreparationScreen(
                     team1 = team1,
                     team2 = team2,
-                    onStartGame = { startGame(team1, team2) })
+                    onStartGame = { shuffledTeam1, shuffledTeam2 ->
+                        startGame(shuffledTeam1, shuffledTeam2)
+                    })
             }
         }
         setContent {
