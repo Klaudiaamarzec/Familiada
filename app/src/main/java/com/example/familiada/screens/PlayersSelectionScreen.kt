@@ -2,15 +2,16 @@ package com.example.familiada.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 @Composable
 fun PlayersSelectionScreen(onPlayersConfirmed: (List<String>, List<String>) -> Unit) {
@@ -27,11 +28,17 @@ fun PlayersSelectionScreen(onPlayersConfirmed: (List<String>, List<String>) -> U
     var showError by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor),
+            .background(backgroundColor)
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    keyboardController?.hide()
+                })
+            },
         contentAlignment = Alignment.Center
     ) {
         Column(

@@ -22,13 +22,13 @@ class MainActivity : ComponentActivity() {
             onRules = { navigateToRules() },
             onSettings = { navigateToSettings() })
     }
-    private var isDarkThemeState = mutableStateOf(false)
+    private var isDarkThemeState = mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val sharedPreferences = getSharedPreferences("AppSettings", MODE_PRIVATE)
-        isDarkThemeState.value = sharedPreferences.getBoolean("isDarkTheme", false)
+        isDarkThemeState.value = sharedPreferences.getBoolean("isDarkTheme", true)
 
         setContent {
             FamiliadaTheme(darkTheme = isDarkThemeState.value) {

@@ -1,17 +1,11 @@
 package com.example.familiada.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,14 +30,18 @@ fun RulesScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(25.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = "Zasady gry",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     color = headlineColor,
                     fontWeight = FontWeight.Bold
-                )
+                ),
+                modifier = Modifier.padding(top = 25.dp, bottom = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -61,10 +59,11 @@ fun RulesScreen(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = textColor,
                         fontWeight = FontWeight.Bold
-                    )
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { onBackToStart() },

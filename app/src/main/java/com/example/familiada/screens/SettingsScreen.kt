@@ -20,7 +20,7 @@ fun SettingsScreen(
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
     val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
-    var isDarkTheme by remember { mutableStateOf(sharedPreferences.getBoolean("isDarkTheme", false)) }
+    var isDarkTheme by remember { mutableStateOf(sharedPreferences.getBoolean("isDarkTheme", true)) }
     var isSoundEnabled by remember { mutableStateOf(sharedPreferences.getBoolean("isSoundEnabled", false)) }
     var isTimeLimitEnabled by remember { mutableStateOf(sharedPreferences.getBoolean("isTimeLimitEnabled", false)) }
     var isMicEnabled by remember { mutableStateOf(sharedPreferences.getBoolean("isMicEnabled", false)) }
