@@ -139,7 +139,7 @@ class GameController(
                     scoreTeam2 += correctAnswer.points + scoreTeam1
                 }
                 nextQuestion()
-                resetTeamInfo()
+                resetTeam()
                 stolenRound = false
                 playSound(R.raw.all_corect)
             } else {
