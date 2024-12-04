@@ -215,7 +215,7 @@ fun GameScreen(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 32.dp)
+            modifier = Modifier.padding(vertical = 16.dp)
         ) {
             question?.let {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -232,7 +232,7 @@ fun GameScreen(
         if (gameController.answeringTeam != null) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 32.dp)
+                modifier = Modifier.padding(vertical = 16.dp)
             ) {
                 Text(
                     text = "Teraz odpowiada: ${gameController.getPlayer()}",
@@ -342,7 +342,7 @@ fun GameScreen(
                                 .height(56.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.background),
+                                .background(backgroundColor),
                             enabled = gameController.answeringTeam != null,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Text,
@@ -411,7 +411,7 @@ fun GameScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 64.dp),
+                .padding(vertical = 32.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
@@ -463,7 +463,8 @@ fun GameScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
             if (timeLimitEnabled && selectedTeam !== null) {
                 Text(

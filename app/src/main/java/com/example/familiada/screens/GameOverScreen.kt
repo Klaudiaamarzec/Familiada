@@ -17,6 +17,9 @@ fun GameOverScreen(
     onBackToMenu: () -> Unit
 ) {
     val backgroundColor = MaterialTheme.colorScheme.background
+    val headlineColor = MaterialTheme.colorScheme.primaryContainer
+    val textColor = MaterialTheme.colorScheme.onBackground
+
     val winningText: String = when {
         scoreTeam1 > scoreTeam2 -> "Wygrywa Drużyna 1!"
         scoreTeam2 > scoreTeam1 -> "Wygrywa Drużyna 2!"
@@ -36,6 +39,7 @@ fun GameOverScreen(
             Text(
                 text = "Koniec gry!",
                 style = MaterialTheme.typography.headlineLarge.copy(
+                    color = headlineColor,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -44,12 +48,12 @@ fun GameOverScreen(
             // Display scores
             Text(
                 text = "Wynik Drużyny 1: $scoreTeam1",
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge.copy(color = textColor)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Wynik Drużyny 2: $scoreTeam2",
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge.copy(color = textColor)
             )
             Spacer(modifier = Modifier.height(24.dp))
 

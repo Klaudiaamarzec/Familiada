@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 @Composable
 fun PlayersSelectionScreen(onPlayersConfirmed: (List<String>, List<String>) -> Unit) {
     val backgroundColor = MaterialTheme.colorScheme.background
+    val textColor = MaterialTheme.colorScheme.onBackground
     val maxPlayers = 5
 
     var team1Size by remember { mutableIntStateOf(2) }
@@ -39,11 +40,11 @@ fun PlayersSelectionScreen(onPlayersConfirmed: (List<String>, List<String>) -> U
                 .padding(16.dp)
                 .verticalScroll(scrollState)
         ) {
-            Text("Wybierz liczbę graczy dla każdej drużyny:", style = MaterialTheme.typography.bodyLarge)
+            Text("Wybierz liczbę graczy dla każdej drużyny:", style = MaterialTheme.typography.bodyLarge.copy(color = textColor))
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Drużyna 1:")
+                Text(text = "Drużyna 1:", style = MaterialTheme.typography.bodyLarge.copy(color = textColor))
                 Slider(
                     value = team1Size.toFloat(),
                     onValueChange = { team1Size = it.toInt() },
@@ -57,7 +58,7 @@ fun PlayersSelectionScreen(onPlayersConfirmed: (List<String>, List<String>) -> U
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Drużyna 2:")
+                Text("Drużyna 2:", style = MaterialTheme.typography.bodyLarge.copy(color = textColor))
                 Slider(
                     value = team2Size.toFloat(),
                     onValueChange = { team2Size = it.toInt() },
@@ -70,7 +71,7 @@ fun PlayersSelectionScreen(onPlayersConfirmed: (List<String>, List<String>) -> U
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Imiona graczy Drużyny 1:", style = MaterialTheme.typography.bodyLarge)
+            Text("Imiona graczy Drużyny 1:", style = MaterialTheme.typography.bodyLarge.copy(color = textColor))
             Spacer(modifier = Modifier.height(8.dp))
             for (i in 0 until team1Size) {
                 OutlinedTextField(
@@ -86,7 +87,7 @@ fun PlayersSelectionScreen(onPlayersConfirmed: (List<String>, List<String>) -> U
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Imiona graczy Drużyny 2:", style = MaterialTheme.typography.bodyLarge)
+            Text("Imiona graczy Drużyny 2:", style = MaterialTheme.typography.bodyLarge.copy(color = textColor))
             Spacer(modifier = Modifier.height(8.dp))
             for (i in 0 until team2Size) {
                 OutlinedTextField(
